@@ -1,9 +1,12 @@
 /*jshint expr: true*/
 var TaggedAPI = require(LIB_DIR);
+var HttpMock = require('./mocks/http.js');
 
 describe('Tagged API', function() {
+
     beforeEach(function() {
-        this.api = new TaggedAPI('/api.php');
+    	this.http = new HttpMock();
+        this.api = new TaggedAPI('/api.php', this.http);
     });
 
     it('is a function', function() {
@@ -32,5 +35,16 @@ describe('Tagged API', function() {
         expect(function(){
            _this.api.execute("foo.bar"); 
         }).to.not.throw();  
+    });
+
+    it('api.execute should return a promise', function() {
+    	var result = this.api.execute("foo");
+    	result.then.should.be.a('function');
+    	//TODO: Find out a better way to check later
+    });
+
+    it('api.execute makes call to api server', function() {
+    	this.api.execute("method", {foo: "foo", bar: "bar"});
+    	this.http.post.called.should.be.true;
     });
 });
