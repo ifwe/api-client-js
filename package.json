@@ -30,7 +30,8 @@
     "grunt-docco": "^0.3.3",
     "grunt-mocha-test": "^0.11.0",
     "mocha": "^1.20.1",
-    "sinon": "^1.10.3"
+    "sinon": "^1.10.3",
+    "chai-as-promised": "^4.1.1"
   },
   "dependencies": {
     "q": "^1.0.1"

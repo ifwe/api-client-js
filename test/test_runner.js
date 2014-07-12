@@ -15,3 +15,7 @@ chai.should();
 GLOBAL.assert = chai.assert;
 GLOBAL.expect = chai.expect;
 chai.config.includeStack = true;
+
+// Promise assertions for Chai
+var chaiAsPromised = require("chai-as-promised");
+chai.use(chaiAsPromised);

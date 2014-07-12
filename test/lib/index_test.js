@@ -5,7 +5,7 @@ var HttpMock = require('./mocks/http.js');
 describe('Tagged API', function() {
 
     beforeEach(function() {
-    	this.http = new HttpMock();
+        this.http = new HttpMock();
         this.api = new TaggedAPI('/api.php', this.http);
     });
 
@@ -25,7 +25,7 @@ describe('Tagged API', function() {
         var _this = this;
 
         expect(function(){
-           _this.api.execute(); 
+           _this.api.execute();
         }).to.throw();
     });
 
@@ -33,18 +33,21 @@ describe('Tagged API', function() {
         var _this = this;
 
         expect(function(){
-           _this.api.execute("foo.bar"); 
-        }).to.not.throw();  
+           _this.api.execute("foo.bar");
+        }).to.not.throw();
     });
 
     it('api.execute should return a promise', function() {
-    	var result = this.api.execute("foo");
-    	result.then.should.be.a('function');
-    	//TODO: Find out a better way to check later
+        var expectedResult = { foo: 'bar' };
+
+        // We must `return` the result of this assertion, which itself is a promise.
+        // This hints to Mocha to wait until the promise resolves before marking this
+        // test as a pass or fail.
+        return this.api.execute("foo").should.eventually.deep.equal(expectedResult);
     });
 
     it('api.execute makes call to api server', function() {
-    	this.api.execute("method", {foo: "foo", bar: "bar"});
-    	this.http.post.called.should.be.true;
+        this.api.execute("method", {foo: "foo", bar: "bar"});
+        this.http.post.called.should.be.true;
     });
 });
