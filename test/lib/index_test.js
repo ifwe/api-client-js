@@ -38,10 +38,13 @@ describe('Tagged API', function() {
         }).to.not.throw();
     });
 
-    it('api.execute should return a promise', function() {
-        var result = this.api.execute("foo");
-        result.then.should.be.a('function');
-        //TODO: Find out a better way to check later
+    it.skip('api.execute should return a promise', function() {
+        var expectedResult = { foo: 'bar' };
+
+        // We must `return` the result of this assertion, which itself is a promise.
+        // This hints to Mocha to wait until the promise resolves before marking this
+        // test as a pass or fail.
+        return this.api.execute("foo").should.eventually.deep.equal(expectedResult);
     });
 
     it('api.execute makes http call to api server on next tick', function() {
