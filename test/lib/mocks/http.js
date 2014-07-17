@@ -1,7 +1,5 @@
 var HttpMock = function() {
-
+    this.post = sinon.spy();
 };
-
-HttpMock.prototype.post = sinon.spy();
 
 module.exports = HttpMock;

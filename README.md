@@ -73,7 +73,7 @@ The Tagged API Client will automatically batch multiple calls together into a si
 to improve network performance.
 
     // All of the following calls will be placed into a queue and
-    // sent as a single request HTTP request on the next tick:
+    // sent as a single HTTP request on the next tick:
     api.execute(method1, params1).then(handler1).done();
     api.execute(method2, params2).then(handler2).done();
     api.execute(method3, params3).then(handler3).done();
@@ -83,9 +83,9 @@ library that supports `.all()`, such as [`Q`](https://github.com/kriskowal/q):
 
     var Q = require('q');
     Q.all([
-        api.execute(method1, params1);
-        api.execute(method2, params2);
-        api.execute(method3, params3);
+        api.execute(method1, params1),
+        api.execute(method2, params2),
+        api.execute(method3, params3)
     ]).then(function(results) {
         // Each result will be available in the `results` array
     }).catch(function(error) {
