@@ -3,10 +3,10 @@ var TaggedAPI = require(LIB_DIR);
 var HttpMock = require('./mocks/http.js');
 
 describe('Tagged API', function() {
-
     beforeEach(function() {
         this.http = new HttpMock();
-        this.api = new TaggedAPI('/api.php', this.http);
+        this.endpoint = '/api.php';
+        this.api = new TaggedAPI(this.endpoint, this.http);
         this.clock = sinon.useFakeTimers();
     });
 
@@ -18,10 +18,6 @@ describe('Tagged API', function() {
         TaggedAPI.should.be.a('function');
     });
 
-    it('endpoint is defined', function() {
-        this.api.should.have.property('endpoint');
-    });
-
     it('api should have a execute method', function() {
         this.api.execute.should.be.a('function');
     });
@@ -30,7 +26,7 @@ describe('Tagged API', function() {
         var _this = this;
 
         expect(function(){
-           _this.api.execute(); 
+           _this.api.execute();
         }).to.throw();
     });
 
@@ -38,8 +34,8 @@ describe('Tagged API', function() {
         var _this = this;
 
         expect(function(){
-           _this.api.execute("foo.bar"); 
-        }).to.not.throw();  
+           _this.api.execute("foo.bar");
+        }).to.not.throw();
     });
 
     it('api.execute should return a promise', function() {
@@ -67,9 +63,34 @@ describe('Tagged API', function() {
         this.clock.tick(1);
         this.http.post.calledWith({
             body: expectedBody,
-            url: '/api.php'
+            url: this.endpoint
         }).should.be.true;
     });
+
+    it('api.execute makes post with encoded keys', function() {
+        var expectedBody = "\nmethod=im.send&pb%26j=foo\n";
+        this.api.execute("im.send", {
+            "pb&j": "foo"
+        });
+        this.clock.tick(1);
+        this.http.post.calledWith({
+            body: expectedBody,
+            url: this.endpoint
+        }).should.be.true;
+    });
+
+    it('api.execute makes post with encoded parameter values', function() {
+        var expectedBody = "\nmethod=im.send&param1=foo%26bar\n";
+        this.api.execute("im.send", {
+            param1: "foo&bar"
+        });
+        this.clock.tick(1);
+        this.http.post.calledWith({
+            body: expectedBody,
+            url: this.endpoint
+        }).should.be.true;
+    });
+
 
     it('api.execute makes one post call for two api requests', function() {
         var expectedBody = "\nmethod=im.send&param1=foo&param2=bar\n" +
@@ -85,8 +106,30 @@ describe('Tagged API', function() {
         this.clock.tick(1);
         this.http.post.calledWith({
             body: expectedBody,
-            url: '/api.php'
+            url: this.endpoint
         }).should.be.true;
         this.http.post.calledOnce.should.be.true;
+    });
+
+    it('api.execute makes new post call after clock tick', function() {
+        var expectedBody = "\nmethod=im.send&param1=foo&param2=bar\n";
+        this.api.execute("im.send", {
+            param1: "foo",
+            param2: "bar"
+        });
+        this.clock.tick(1);
+        this.http.post.calledOnce.should.be.true;
+
+        // Second call uses a new, empty queue
+        this.api.execute("im.doStuff", {
+            param1: "bar",
+            param2: "baz"
+        });
+        this.clock.tick(1);
+        this.http.post.calledTwice.should.be.true;
+        this.http.post.calledWith({
+            body: expectedBody,
+            url: this.endpoint
+        }).should.be.true;
     });
 });
