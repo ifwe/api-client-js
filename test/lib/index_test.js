@@ -18,11 +18,11 @@ describe('Tagged API', function() {
         TaggedAPI.should.be.a('function');
     });
 
-    it('api should have a execute method', function() {
+    it('api should have an execute method', function() {
         this.api.execute.should.be.a('function');
     });
 
-    it('api.execute should throw exception with a method string', function() {
+    it('api.execute should throw exception if no method parameter is passed in', function() {
         var _this = this;
 
         expect(function(){
@@ -30,21 +30,12 @@ describe('Tagged API', function() {
         }).to.throw();
     });
 
-    it('api.execute should not throw exception with a method string', function() {
+    it('api.execute should not throw exception if method parameter is provided', function() {
         var _this = this;
 
         expect(function(){
            _this.api.execute("foo.bar");
         }).to.not.throw();
-    });
-
-    it.skip('api.execute should return a promise', function() {
-        var expectedResult = { foo: 'bar' };
-
-        // We must `return` the result of this assertion, which itself is a promise.
-        // This hints to Mocha to wait until the promise resolves before marking this
-        // test as a pass or fail.
-        return this.api.execute("foo").should.eventually.deep.equal(expectedResult);
     });
 
     it('api.execute makes http call to api server on next tick', function() {
@@ -94,7 +85,6 @@ describe('Tagged API', function() {
         }).should.be.true;
     });
 
-
     it('api.execute makes one post call for two api requests', function() {
         var expectedBody = "\nmethod=im.send&param1=foo&param2=bar\n" +
             "method=im.doStuff&param1=bar&param2=baz\n";
@@ -134,5 +124,30 @@ describe('Tagged API', function() {
             body: expectedBody,
             url: this.endpoint
         }).should.be.true;
+    });
+
+    describe('execute()', function() {
+        it('resolves promise with parsed response data', function() {
+            var expectedResult = { foo: 'bar' };
+            var promise = this.api.execute('anything');
+            this.clock.tick(1);
+            this.http.resolve({
+                // ugly response body :(
+                body: '["{\\"foo\\":\\"bar\\"}"]'
+            });
+            this.http.verifyNoPendingRequests();
+            return promise.should.eventually.deep.equal(expectedResult);
+        });
+
+        it('rejects promise with if response data cannot be parsed', function() {
+            var promise = this.api.execute('anything');
+            this.clock.tick(1);
+            this.http.resolve({
+                // ugly response body :(
+                body: 'NOT JSON'
+            });
+            this.http.verifyNoPendingRequests();
+            return promise.should.be.rejected;
+        });
     });
 });
