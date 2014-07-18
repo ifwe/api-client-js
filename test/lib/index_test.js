@@ -6,7 +6,10 @@ describe('Tagged API', function() {
     beforeEach(function() {
         this.http = new HttpMock();
         this.endpoint = '/api.php';
-        this.api = new TaggedAPI(this.endpoint, this.http);
+        this.options = {
+            foo: '123'
+        };
+        this.api = new TaggedAPI(this.endpoint, this.options, this.http);
         this.clock = sinon.useFakeTimers();
     });
 
@@ -55,10 +58,17 @@ describe('Tagged API', function() {
             param2: "bar"
         });
         this.clock.tick(1);
-        this.http.post.calledWith({
-            body: expectedBody,
-            url: this.endpoint
-        }).should.be.true;
+        this.http.post.lastCall.args[0].should.have.property('body', expectedBody);
+    });
+
+    it('api.execute should add parameters to query string', function() {
+        var expectedBody = "\nmethod=im.send&param1=foo&param2=bar\n";
+        this.api.execute("im.send", {
+            param1: "foo",
+            param2: "bar"
+        });
+        this.clock.tick(1);
+        this.http.post.lastCall.args[0].should.have.property('url', this.endpoint + "?foo=123");
     });
 
     it('api.execute makes post with encoded keys', function() {
@@ -67,10 +77,7 @@ describe('Tagged API', function() {
             "pb&j": "foo"
         });
         this.clock.tick(1);
-        this.http.post.calledWith({
-            body: expectedBody,
-            url: this.endpoint
-        }).should.be.true;
+        this.http.post.lastCall.args[0].should.have.property('body', expectedBody);
     });
 
     it('api.execute makes post with encoded parameter values', function() {
@@ -79,10 +86,7 @@ describe('Tagged API', function() {
             param1: "foo&bar"
         });
         this.clock.tick(1);
-        this.http.post.calledWith({
-            body: expectedBody,
-            url: this.endpoint
-        }).should.be.true;
+        this.http.post.lastCall.args[0].should.have.property('body', expectedBody);
     });
 
     it('api.execute makes one post call for two api requests', function() {
@@ -97,10 +101,6 @@ describe('Tagged API', function() {
             param2: "baz"
         });
         this.clock.tick(1);
-        this.http.post.calledWith({
-            body: expectedBody,
-            url: this.endpoint
-        }).should.be.true;
         this.http.post.calledOnce.should.be.true;
     });
 
@@ -120,10 +120,6 @@ describe('Tagged API', function() {
         });
         this.clock.tick(1);
         this.http.post.calledTwice.should.be.true;
-        this.http.post.calledWith({
-            body: expectedBody,
-            url: this.endpoint
-        }).should.be.true;
     });
 
     describe('execute()', function() {
