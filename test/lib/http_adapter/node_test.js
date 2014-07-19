@@ -36,11 +36,21 @@ describe('Node HTTP Adapter', function() {
                 body: body
             });
             this.request.post.calledOnce.should.be.true;
-            this.request.post.calledWith({
+            this.request.post.lastCall.args[0].should.have.property('url', url);
+        });
+
+        it('posts cookies to specified url', function() {
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            var cookies = 'testcookies=1';
+            this.http.post({
                 url: url,
                 body: body,
-                timeout: 10000
-            }).should.be.true;
+                cookies: cookies
+            });
+            this.request.post.calledOnce.should.be.true;
+            this.request.post.lastCall.args[0].should.have.property('headers');
+            this.request.post.lastCall.args[0].headers.should.have.property('Cookie', cookies);
         });
 
         it('resolves with response', function() {
