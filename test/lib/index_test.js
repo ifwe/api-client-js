@@ -51,6 +51,20 @@ describe('Tagged API', function() {
         this.http.post.called.should.be.true;
     });
 
+    it('api.execute should not submit prototypal properties', function(){
+        var expectedBody = "\nmethod=my.api&foo=bar&baz=bot\n";
+        var fakeObj = function() {
+            this.foo = "bar";
+            this.baz = "bot";
+        };
+
+        fakeObj.prototype.bob = "something";
+
+        this.api.execute("my.api", new fakeObj());
+        this.clock.tick(1);
+        this.http.post.lastCall.args[0].should.have.property('body', expectedBody);
+    });
+
     it('api.execute makes post with transformed post body and correct endpoint', function() {
         var expectedBody = "\nmethod=im.send&param1=foo&param2=bar\n";
         this.api.execute("im.send", {

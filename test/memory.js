@@ -11,11 +11,10 @@ memwatch.on('stats', function(stats) {
     console.log('max', stats.max);
 });
 
-var http = new HttpMock();
-var api = new TaggedAPI('/api.php', http);
-
 setInterval(function() {
     var clock = global.sinon.useFakeTimers();
+    var http = new HttpMock();
+    var api = new TaggedAPI('/api.php', {}, http);
 
     api.execute('im.send').then(function(data) {
         // console.log('success', data);
