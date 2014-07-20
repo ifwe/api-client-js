@@ -20,6 +20,11 @@
   "bugs": {
     "url": "https://github.com/tagged/api-client-js/issues"
   },
+  "dependencies": {
+    "q": "^1.0.1",
+    "request": "^2.37.0",
+    "lodash": "^2.4.1"
+  },
   "homepage": "https://github.com/tagged/api-client-js",
   "devDependencies": {
     "blanket": "^1.1.6",
@@ -33,8 +38,5 @@
     "sinon": "^1.10.3",
     "chai-as-promised": "^4.1.1",
     "memwatch": "^0.2.2"
-  },
-  "dependencies": {
-    "q": "^1.0.1"
   }
 }
