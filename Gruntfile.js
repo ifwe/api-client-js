@@ -2,7 +2,8 @@ var path = require('path');
 
 module.exports = function(grunt) {
     var TEST_RUNNER = path.join(process.cwd(), 'test', 'test_runner');
-    var ALL_TESTS = 'test/**/*_test.js';
+    var UNIT_TESTS = 'test/unit/**/*_test.js';
+    var INTEGRATION_TESTS = 'test/integration/**/*_test.js';
 
     // NPM tasks, alphabetical
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -30,7 +31,7 @@ module.exports = function(grunt) {
         // Server-side mocha tests
         mochaTest: {
             // Runs all tests
-            test: {
+            unit: {
                 options: {
                     require: TEST_RUNNER,
                     reporter: 'spec',
@@ -39,7 +40,19 @@ module.exports = function(grunt) {
                     recursive: true,
                     clearRequireCache: true
                 },
-                src: [ALL_TESTS]
+                src: [UNIT_TESTS]
+            },
+
+            integration: {
+                options: {
+                    require: TEST_RUNNER,
+                    reporter: 'spec',
+                    ui: 'bdd',
+                    timeout: 10000, // Allow up to 10s for integration tests to fail
+                    recursive: true,
+                    clearRequireCache: true
+                },
+                src: [INTEGRATION_TESTS]
             },
 
             // Instruments code for reporting test coverage
@@ -49,9 +62,9 @@ module.exports = function(grunt) {
                     reporter: 'spec',
                     ui: 'bdd',
                     timeout: 200,
-                    recursive: true,
+                    recursive: true
                 },
-                src: [ALL_TESTS]
+                src: [UNIT_TESTS]
             },
 
             // Reports test coverage
@@ -65,13 +78,13 @@ module.exports = function(grunt) {
                     quiet: true,
                     captureFile: 'test/coverage.html'
                 },
-                src: [ALL_TESTS]
+                src: [UNIT_TESTS]
             }
         },
 
         // Watches filesystem for changes to run tasks automatically
         watch: {
-            test: {
+            unit: {
                 options: {
                     spawn: false
                 },
@@ -79,17 +92,26 @@ module.exports = function(grunt) {
                     'lib/**/*.js',
                     'test/**/*.js'
                 ],
-                tasks: ['mochaTest:test']
+                tasks: ['mochaTest:unit']
             }
         }
     });
 
+    // Runs all tests
+    grunt.registerTask('test', 'Runts all unit and integration tests', ['mochaTest:unit', 'mochaTest:integration']);
+
     // Runs all unit tests
-    grunt.registerTask('test', 'All unit tests', ['mochaTest:test']);
+    grunt.registerTask('unit', 'Runts all unit tests', ['mochaTest:unit']);
+
+    // Runs all integration tests
+    grunt.registerTask('integration', 'Runs all integration tests', ['mochaTest:integration']);
 
     // Generates test coverage report
-    grunt.registerTask('coverage', 'Unit test code coverage', ['clean:coverage', 'mochaTest:instrument', 'mochaTest:coverage']);
+    grunt.registerTask('coverage', 'Generates unit test code coverage', ['clean:coverage', 'mochaTest:instrument', 'mochaTest:coverage']);
 
     // Generates documentation
-    grunt.registerTask('docs', 'Generate documentation', ['clean:docs', 'docco:main']);
+    grunt.registerTask('docs', 'Generates documentation', ['clean:docs', 'docco:main']);
+
+    // Dev mode
+    grunt.registerTask('dev', 'Runs unit tests and enables watcher', ['mochaTest:unit', 'watch:unit']);
 };

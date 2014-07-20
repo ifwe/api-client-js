@@ -1,6 +1,6 @@
 var memwatch = require('memwatch');
-var TaggedAPI = require('../lib');
-var HttpMock = require('./lib/mocks/http.js');
+var TaggedAPI = require('../../lib');
+var HttpMock = require('../unit/lib/mocks/http.js');
 global.sinon = require('sinon');
 
 memwatch.on('leak', function(data) {
