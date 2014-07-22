@@ -21,9 +21,10 @@
     "url": "https://github.com/tagged/api-client-js/issues"
   },
   "dependencies": {
+    "btoa": "^1.1.2",
+    "lodash": "^2.4.1",
     "q": "^1.0.1",
-    "request": "^2.37.0",
-    "lodash": "^2.4.1"
+    "request": "^2.37.0"
   },
   "homepage": "https://github.com/tagged/api-client-js",
   "devDependencies": {
