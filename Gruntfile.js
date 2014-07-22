@@ -48,8 +48,8 @@ module.exports = function(grunt) {
                     require: TEST_RUNNER,
                     reporter: 'spec',
                     ui: 'bdd',
-                    timeout: 10000, // Allow up to 10s for integration tests to fail
-                    slow: 1000, // Mark tests as slow if they take longer than 1s
+                    timeout: 10000,     // Allow up to 10s for integration tests to fail
+                    slow: 1000,         // Mark tests as slow if they take longer than 1s
                     recursive: true,
                     clearRequireCache: true
                 },
@@ -114,5 +114,5 @@ module.exports = function(grunt) {
     grunt.registerTask('docs', 'Generates documentation', ['clean:docs', 'docco:main']);
 
     // Dev mode
-    grunt.registerTask('dev', 'Runs unit tests and enables watcher', ['mochaTest:unit', 'watch:unit']);
+    grunt.registerTask('dev', 'Enables watchers for developing', ['watch:unit']);
 };
