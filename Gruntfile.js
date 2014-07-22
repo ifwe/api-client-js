@@ -49,6 +49,7 @@ module.exports = function(grunt) {
                     reporter: 'spec',
                     ui: 'bdd',
                     timeout: 10000, // Allow up to 10s for integration tests to fail
+                    slow: 1000, // Mark tests as slow if they take longer than 1s
                     recursive: true,
                     clearRequireCache: true
                 },

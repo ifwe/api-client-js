@@ -22,20 +22,41 @@ describe('Integration', function() {
     });
 
     describe('tagged.alerts.get', function() {
-        it('responds with stat: ok', function() {
+        it('resolves promise with object containing stat: ok', function() {
             return this.api.execute('tagged.alerts.get', {
                 count: 7
             }).should.eventually.have.property('stat', 'ok');
         });
 
-        it('responds with result array', function() {
+        it('resolves promise with object containing result array', function() {
             return this.api.execute('tagged.alerts.get', {
                 count: 7
             }).then(function(result) {
                 result.should.have.property('result');
                 result.result.should.be.an('Array');
-                // Note: Asserting the specific values of the the result array would be too flaky
+                // Note: Asserting the specific values of the the result array would be
+                // too flaky because the values may change over time.
             });
+        });
+    });
+
+    describe('tagged.cctest.get', function() {
+        it('resolves to `2` for ng_newsfeed (test on at 100%)', function() {
+            return this.api.execute('tagged.cctest.get', {
+                name: 'ng_newsfeed'
+            }).should.eventually.have.property('results', '2');
+        });
+
+        it('resolves to `false` for non-existent test', function() {
+            return this.api.execute('tagged.cctest.get', {
+                name: 'non_existent_test_12345'
+            }).should.eventually.have.property('results', false);
+        });
+    });
+
+    describe('tagged.nonexistent.endpoint', function() {
+        it('rejects promise', function() {
+            return this.api.execute('tagged.nonexistent.endpoint').should.be.rejected;
         });
     });
 });
