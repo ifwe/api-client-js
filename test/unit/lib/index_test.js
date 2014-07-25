@@ -202,10 +202,10 @@ describe('Tagged API', function() {
 
         it('passes request cookies to api instance', function() {
             this.req.headers = {
-                Cookie: 'test_cookie=1'
+                cookie: 'test_cookie=1'
             };
             this.middleware(this.req, this.res, this.next);
-            this.req.api._options.cookies.should.equal(this.req.headers.Cookie);
+            this.req.api._options.cookies.should.equal(this.req.headers.cookie);
         });
 
         it('calls next()', function() {
