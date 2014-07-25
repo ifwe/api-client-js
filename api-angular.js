@@ -154,6 +154,14 @@
 
         return function(req, res, next) {
             req.api = new TaggedApi(url, mergeRecursive({
+                query: {
+                    application_id: 'user',
+                    format: 'JSON'
+                },
+                params: {
+                    api_signature: '',
+                    session_token: req.cookies && req.cookies.S
+                },
                 cookies: req.headers && req.headers.Cookie
             }, options || {}), http);
             next();
