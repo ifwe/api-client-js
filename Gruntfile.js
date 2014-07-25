@@ -7,6 +7,8 @@ module.exports = function(grunt) {
 
     // NPM tasks, alphabetical
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-docco');
     grunt.loadNpmTasks('grunt-mocha-test');
@@ -16,6 +18,17 @@ module.exports = function(grunt) {
         clean: {
             docs: ['docs'],
             coverage: ['test/coverage.html']
+        },
+
+        // Concat
+        concat: {
+            angular: {
+                src: ['lib/index.js', 'lib/http_adapter/angular.js', 'lib/wrappers/angular.js'],
+                dest: 'api-angular.js',
+                options: {
+                    footer: 'TaggedApi.angularWrapper(angular, TaggedApi);'
+                }
+            }
         },
 
         // Documentation
@@ -83,6 +96,14 @@ module.exports = function(grunt) {
             }
         },
 
+        uglify: {
+            angular: {
+                files: {
+                    'api-angular-min.js': ['api-angular.js']
+                }
+            }
+        },
+
         // Watches filesystem for changes to run tasks automatically
         watch: {
             unit: {
@@ -115,4 +136,7 @@ module.exports = function(grunt) {
 
     // Dev mode
     grunt.registerTask('dev', 'Enables watchers for developing', ['watch:unit']);
+
+    // Build concatenated/minified version for browsers
+    grunt.registerTask('build', 'Builds concatenated/minified versions for browsers', ['concat', 'uglify']);
 };
