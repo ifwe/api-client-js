@@ -151,10 +151,10 @@ describe('Tagged API', function() {
             var expectedResult = { foo: 'bar' };
             var promise = this.api.execute('anything');
             this.clock.tick(1);
-            this.http.resolve({
+            this.http.resolve([{
                 // ugly response body :(
                 body: '["{\\"foo\\":\\"bar\\"}"]'
-            });
+            }]);
             this.http.verifyNoPendingRequests();
             return promise.should.eventually.deep.equal(expectedResult);
         });
@@ -162,10 +162,10 @@ describe('Tagged API', function() {
         it('rejects promise with if response data cannot be parsed', function() {
             var promise = this.api.execute('anything');
             this.clock.tick(1);
-            this.http.resolve({
+            this.http.resolve([{
                 // ugly response body :(
                 body: 'NOT JSON'
-            });
+            }]);
             this.http.verifyNoPendingRequests();
             return promise.should.be.rejected;
         });
@@ -174,9 +174,9 @@ describe('Tagged API', function() {
             var expectedResult = { foo: 'bar' };
             var promise = this.api.execute('anything');
             this.clock.tick(1);
-            this.http.resolve({
+            this.http.resolve([{
                 body: JSON.stringify([JSON.stringify({ stat: 'fail' })])
-            });
+            }]);
             this.http.verifyNoPendingRequests();
             return promise.should.be.rejected;
         });
