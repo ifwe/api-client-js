@@ -1,7 +1,7 @@
 {
   "name": "tagged-api",
-  "version": "0.0.0",
-  "description": "API client for Tagged.",
+  "version": "0.0.1",
+  "description": "API client for Tagged with support for nodejs and angularjs",
   "main": "lib/index.js",
   "scripts": {
     "test": "grunt test"
