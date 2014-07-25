@@ -1,12 +1,13 @@
-var Q = require('q');
+var Promise = require('bluebird');
 
 var HttpMock = function() {
     this.deferreds = [];
 
     this.post = sinon.spy(function() {
-        var deferred = Q.defer();
-        this.deferreds.push(deferred);
-        return deferred.promise;
+        var promise = new Promise(function(resolve, reject) {
+            this.deferreds.push({resolve: resolve, reject: reject});
+        }.bind(this));
+        return promise;
     });
 
     this.resolveAll = function(values) {

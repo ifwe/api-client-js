@@ -1,8 +1,8 @@
 /*jshint expr: true*/
-var TaggedAPI = require(LIB_DIR);
-var HttpMock = require('./mocks/http.js');
 
 describe('Tagged API', function() {
+    var TaggedAPI = require(LIB_DIR);
+    var HttpMock = require('./mocks/http.js');
     beforeEach(function() {
         this.http = new HttpMock();
         this.endpoint = '/api.php';
