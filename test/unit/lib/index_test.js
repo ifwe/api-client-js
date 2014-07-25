@@ -1,8 +1,8 @@
 /*jshint expr: true*/
-var TaggedAPI = require(LIB_DIR);
-var HttpMock = require('./mocks/http.js');
 
 describe('Tagged API', function() {
+    var TaggedAPI = require(LIB_DIR);
+    var HttpMock = require('./mocks/http.js');
     beforeEach(function() {
         this.http = new HttpMock();
         this.endpoint = '/api.php';
@@ -174,9 +174,9 @@ describe('Tagged API', function() {
             var expectedResult = { foo: 'bar' };
             var promise = this.api.execute('anything');
             this.clock.tick(1);
-            this.http.resolve({
+            this.http.resolve([{
                 body: JSON.stringify([JSON.stringify({ stat: 'fail' })])
-            });
+            }]);
             this.http.verifyNoPendingRequests();
             return promise.should.be.rejected;
         });

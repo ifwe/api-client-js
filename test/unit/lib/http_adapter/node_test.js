@@ -64,7 +64,7 @@ describe('Node HTTP Adapter', function() {
 
             this.request.respondWith(null, {
                 body: expectedBody
-            });
+            }, expectedBody);
 
             return result.should.become({
                 body: expectedBody
