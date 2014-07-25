@@ -174,9 +174,9 @@ describe('Tagged API', function() {
             var expectedResult = { foo: 'bar' };
             var promise = this.api.execute('anything');
             this.clock.tick(1);
-            this.http.resolve([{
-                body: JSON.stringify([JSON.stringify({ stat: 'fail' })])
-            }]);
+            this.http.resolve({
+                body: '["{\\"stat\\":\\"fail\\"}"]'
+            });
             this.http.verifyNoPendingRequests();
             return promise.should.be.rejected;
         });
