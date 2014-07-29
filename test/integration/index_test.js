@@ -40,16 +40,14 @@ describe('Integration', function() {
     });
 
     describe('tagged.cctest.get', function() {
-        it('resolves to `2` for ng_newsfeed (test on at 100%)', function() {
-            return this.api.execute('tagged.cctest.get', {
-                name: 'ng_newsfeed'
-            }).should.eventually.have.property('results', '2');
-        });
-
-        it('resolves to `false` for non-existent test', function() {
+        it('rejects with stat: "fail" for non-existent test', function() {
             return this.api.execute('tagged.cctest.get', {
                 name: 'non_existent_test_12345'
-            }).should.eventually.have.property('results', false);
+            }).then(function(results) {
+                results.should.not.be.ok;
+            }).catch(function(results) {
+                results.should.property('stat', 'fail');
+            });
         });
     });
 

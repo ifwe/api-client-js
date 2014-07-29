@@ -120,7 +120,7 @@
         for (var i in queue) {
             var result = results[i];
             if (result.stat && result.stat !== 'ok') {
-                queue[i].deferred.reject(result.stat);
+                queue[i].deferred.reject(result);
             } else {
                 queue[i].deferred.resolve(result);
             }
@@ -156,13 +156,13 @@
             req.api = new TaggedApi(url, mergeRecursive({
                 query: {
                     application_id: 'user',
-                    format: 'JSON'
-                },
-                params: {
-                    api_signature: '',
+                    format: 'JSON',
                     session_token: req.cookies && req.cookies.S
                 },
-                cookies: req.headers && req.headers.Cookie
+                params: {
+                    api_signature: ''
+                },
+                cookies: req.headers && req.headers.cookie
             }, options || {}), http);
             next();
         };
