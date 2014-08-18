@@ -1,0 +1,23 @@
+{
+  "name": "tagged-api-client",
+  "version": "1.0.8",
+  "authors": [
+    "Hector Virgen <hvirgen@tagged.com>"
+  ],
+  "description": "Tagged API Client for AngularJS",
+  "main": "api-angular.js",
+  "keywords": [
+    "Tagged",
+    "Angular"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test"
+  ],
+  "dependencies": {
+    "angular": "~1.2.21"
+  }
+}
