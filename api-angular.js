@@ -258,8 +258,15 @@
 
     AngularAdapter.prototype.post = function(req) {
         return this._$http.post(req.url, req.body, {
-            timeout: 10000
+            timeout: 10000,
+            transformResponse: transformResponse
         }).then(formatResponse);
+    };
+
+    var transformResponse = function(data) {
+        // Do not deserialize the data -- let API client do that.
+        // Just return the raw response body.
+        return data;
     };
 
     var formatResponse = function(response) {
