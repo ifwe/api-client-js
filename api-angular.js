@@ -295,7 +295,7 @@
         // Registers the module `tagged.service.api` with Angular,
         // allowing Angular apps to declare this module as a dependency.
         // This module has no depdencies of its own.
-        var module = angular.module('tagged.service.api', []);
+        var module = angular.module('tagged.service.api', ['ngCookies']);
 
         // Register `taggedApi` as a factory,
         // which allows Angular us to return the service ourselves.
@@ -303,10 +303,16 @@
         // and the same instance will be passed around through the Angular app.
         module.factory('taggedApi', taggedApiFactory);
 
-        taggedApiFactory.$inject = ['$http'];
-        function taggedApiFactory($http) {
-            var angularAdapter = new TaggedApi.AngularAdapter($http);
-            return new TaggedApi('/api', {}, angularAdapter);
+        taggedApiFactory.$inject = ['$http', '$cookies'];
+        function taggedApiFactory($http, $cookies) {
+            var angularAdapter = new TaggedApi.AngularAdapter($http, $cookies);
+            return new TaggedApi('/api/', {
+                query: {
+                    application_id: 'user',
+                    format: 'json',
+                    session_token: $cookies.S
+                }
+            }, angularAdapter);
         }
     };
 
