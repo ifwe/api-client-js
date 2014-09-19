@@ -62,9 +62,11 @@
         }
 
         var promise = new Promise(function(resolve, reject) {
+            var _params = mergeRecursive({}, this._options.params);
+
             this._queue.push({
                 method: method,
-                params: mergeRecursive(this._options.params, params || {}),
+                params: mergeRecursive(_params, params || {}),
                 deferred: {resolve: resolve, reject: reject}
             });
 
