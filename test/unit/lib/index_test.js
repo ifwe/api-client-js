@@ -123,6 +123,21 @@ describe('Tagged API', function() {
             this.http.post.calledOnce.should.be.true;
         });
 
+        // WTA-537
+        it('does not bleed parameters', function() {
+            this.api.execute("im.send", {
+                param1: "foo",
+                param2: "bar"
+            });
+            this.api.execute("im.doStuff", {
+                param3: "bar",
+                param4: "baz"
+            });
+            this.clock.tick(1);
+            this.http.post.lastCall.args[0].body.should.not.match(/method=im.send.*param3=bar/);
+            this.http.post.lastCall.args[0].body.should.not.match(/method=im.doStuff.*param1=foo/g);
+        });
+
         it('makes new post call after clock tick', function() {
             var expectedBody = "\nmethod=im.send&param1=foo&param2=bar\n";
             this.api.execute("im.send", {
