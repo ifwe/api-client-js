@@ -244,4 +244,25 @@ describe('Tagged API', function() {
             body.should.contain('track=');
         });
     });
+
+    describe('on', function(){
+        it('is a function', function(){
+            this.api.on.should.be.a("function");
+        });
+        it('calls provided callback function when specified stat occurs', function(done){
+            var spy = sinon.spy(function(call, result) {
+                call.method.should.equal('test.foo');
+                result.stat.should.equal('test_stat');
+                done();
+            });
+            this.api.on('test_stat', spy);
+            spy.called.should.be.false;
+            var promise = this.api.execute('test.foo').catch(function() {});
+            this.clock.tick(1);
+            this.http.resolve({
+                body: '["{\\"stat\\":\\"test_stat\\"}"]'
+            });
+            this.http.verifyNoPendingRequests();
+        });
+    });
 });
