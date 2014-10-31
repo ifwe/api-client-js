@@ -245,37 +245,42 @@ describe('Tagged API', function() {
         });
     });
 
-    describe('on', function(){
+    describe('on', function() {
+        var noop = function() {};
+
         it('is a function', function(){
             this.api.on.should.be.a("function");
         });
 
-        it('calls provided callback function when specified stat occurs', function(done){
-            var spy = sinon.spy(function(call, result) {
-                call.method.should.equal('test.foo');
-                result.stat.should.equal('test_stat');
-                done();
-            });
+        it('calls provided callback function when specified stat occurs', function() {
+            var spy = sinon.spy();
             this.api.on('test_stat', spy);
             spy.called.should.be.false;
-            var promise = this.api.execute('test.foo').catch(function() {});
+            var promise = this.api.execute('test.foo').catch(noop);
             this.clock.tick(1);
             this.http.resolve({
                 body: '["{\\"stat\\":\\"test_stat\\"}"]'
             });
             this.http.verifyNoPendingRequests();
+            return promise.finally(function() {
+                spy.called.should.be.true;
+                spy.lastCall.args[0].should.contain({ method: 'test.foo' });
+                spy.lastCall.args[1].should.contain({ stat: 'test_stat' });
+            });
         });
 
-        it('does not call provided callback function when unspecified stat occurs', function(){
-            var spy = sinon.spy(function(call, result) {});
+        it('does not call provided callback function when unspecified stat occurs', function() {
+            var spy = sinon.spy();
             this.api.on('test_stat', spy);
-            var promise = this.api.execute('test.foo').catch(function() {});
+            var promise = this.api.execute('test.foo').catch(noop);
             this.clock.tick(1);
             this.http.resolve({
-                body: '["{\\"stat\\":\\"test_stat\\"}"]'
+                body: '["{\\"stat\\":\\"anything_else\\"}"]'
             });
             this.http.verifyNoPendingRequests();
-            spy.called.should.be.false;
+            return promise.finally(function() {
+                spy.called.should.be.false;
+            });
         });
     });
 });
