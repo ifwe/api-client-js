@@ -249,6 +249,7 @@ describe('Tagged API', function() {
         it('is a function', function(){
             this.api.on.should.be.a("function");
         });
+
         it('calls provided callback function when specified stat occurs', function(done){
             var spy = sinon.spy(function(call, result) {
                 call.method.should.equal('test.foo');
@@ -263,6 +264,18 @@ describe('Tagged API', function() {
                 body: '["{\\"stat\\":\\"test_stat\\"}"]'
             });
             this.http.verifyNoPendingRequests();
+        });
+
+        it('does not call provided callback function when unspecified stat occurs', function(){
+            var spy = sinon.spy(function(call, result) {});
+            this.api.on('test_stat', spy);
+            var promise = this.api.execute('test.foo').catch(function() {});
+            this.clock.tick(1);
+            this.http.resolve({
+                body: '["{\\"stat\\":\\"test_stat\\"}"]'
+            });
+            this.http.verifyNoPendingRequests();
+            spy.called.should.be.false;
         });
     });
 });
