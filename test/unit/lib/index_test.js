@@ -70,6 +70,24 @@ describe('Tagged API', function() {
             this.http.post.lastCall.args[0].body.should.contain('param2=bar');
         });
 
+        it('supports nested data structures containing arrays', function() {
+            this.api.execute("im.send", {
+                param1: ["foo", "bar"]
+            });
+            this.clock.tick(1);
+            this.http.post.lastCall.args[0].body.should.contain('param1[]=foo');
+            this.http.post.lastCall.args[0].body.should.contain('param1[]=bar');
+        });
+
+        it('supports nested data structures containing objects', function() {
+            this.api.execute("im.send", {
+                param1: { foo: 'test_foo', bar: 'test_bar' }
+            });
+            this.clock.tick(1);
+            this.http.post.lastCall.args[0].body.should.contain('param1[foo]=test_foo');
+            this.http.post.lastCall.args[0].body.should.contain('param1[bar]=test_bar');
+        });
+
         it('does not submit prototypal properties', function(){
             var fakeObj = function() {
                 this.foo = "bar";

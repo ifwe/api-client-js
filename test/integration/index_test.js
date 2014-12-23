@@ -56,4 +56,13 @@ describe('Integration', function() {
             return this.api.execute('tagged.nonexistent.endpoint').should.be.rejected;
         });
     });
+
+    describe('nested data endpoint: tagged.log.photoUpload', function() {
+        it('resolves promise with object containing stat: ok', function() {
+            return this.api.execute('tagged.log.photoUpload', {
+                name: 'photo_upload_lightbox',
+                data: ['meetme_meetme_yes_pinchpoint', 'view']
+            }).should.eventually.have.property('stat', 'ok');
+        });
+    });
 });
