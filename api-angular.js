@@ -229,6 +229,10 @@
                 return parameterizePrimitive(key, value);
                 break;
 
+            case 'undefined':
+                return parameterizePrimitive(key, '');
+                break;
+
             case 'object':
                 // `null` is considered an "object"
                 return (null === value) ? parameterizePrimitive(key, value) : parameterizeObject(key, value);
