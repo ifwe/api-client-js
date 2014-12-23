@@ -211,19 +211,55 @@
 
             //TODO: support arrays as values
             if (null !== call.params[key] && call.params.hasOwnProperty(key)) {
-                params.push(
-                    // Keys and values must be encoded to
-                    // prevent accidental breakage of string
-                    // splits by `=` and `&`.
-                    encodeURIComponent(key) +
-                    "=" +
-                    encodeURIComponent(call.params[key])
-                );
+                params.push(parameterize(key, call.params[key]));
             }
         }
 
         // All params are joined by `&`, resulting in a single
         // one-line string to represent the API call.
+        return params.join('&');
+    };
+
+    var parameterize = function(key, value) {
+        var type = typeof value;
+        switch (type) {
+            case 'string':
+            case 'number':
+            case 'boolean':
+                return parameterizePrimitive(key, value);
+                break;
+
+            case 'object':
+                // `null` is considered an "object"
+                return (null === value) ? parameterizePrimitive(key, value) : parameterizeObject(key, value);
+                break;
+
+            default:
+                throw new Error("Unable to parameterize key " + key + " with type " + type);
+        }
+    };
+
+    var parameterizePrimitive = function(key, value) {
+        // Keys and values must be encoded to
+        // prevent accidental breakage of string
+        // splits by `=` and `&`.
+        return encodeURIComponent(key) + "=" + encodeURIComponent(value);
+    };
+
+    var parameterizeObject = function(key, value) {
+        var params = [];
+        if (Array.isArray(value)) {
+            for (var i = 0, len = value.length; i < len; i++) {
+                params.push(encodeURIComponent(key) + "[]=" + encodeURIComponent(value[i]));
+            }
+        } else {
+            // assume object
+            for (var subkey in value) {
+                if (!value.hasOwnProperty(subkey)) continue;
+                params.push(encodeURIComponent(key) + "[" + encodeURIComponent(subkey) + "]=" + encodeURIComponent(value[subkey]));
+            }
+        }
+
         return params.join('&');
     };
 
