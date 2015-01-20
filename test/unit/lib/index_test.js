@@ -15,7 +15,9 @@ describe('Tagged API', function() {
                 defaultParam1: 'defaultValue1',
                 defaultParam2: 'defaultValue2'
             },
-            cookies: 'test_cookie=123'
+            cookies: {
+                test_cookie: 123
+            }
         };
         this.api = new TaggedAPI(this.endpoint, this.options, this.http);
         this.clock = sinon.useFakeTimers();
@@ -177,7 +179,17 @@ describe('Tagged API', function() {
         it('passes cookies to http adapter post()', function() {
             this.api.execute('anything');
             this.clock.tick(1);
-            this.http.post.lastCall.args[0].should.have.property('cookies', this.options.cookies);
+            this.http.post.lastCall.args[0].should.have.property('cookies');
+            this.http.post.lastCall.args[0].cookies.should.contain(this.options.cookies);
+        });
+
+        it('passes session token from cookies as a "session_token" query parameter', function() {
+            this.options.cookies.S = 'test_session_token';
+            this.api.execute('anything');
+            this.clock.tick(1);
+            var lastCallArgs = this.http.post.lastCall.args[0];
+            lastCallArgs.should.have.property('url');
+            lastCallArgs.url.should.contain('session_token=test_session_token');
         });
 
         it('resolves promise with parsed response data', function() {
