@@ -89,8 +89,8 @@
             query[key] = this._options.query[key];
         }
 
-        if (this._options.cookies.S) {
-            query.session_token = this._options.cookies.S
+        if (this._cookies.S) {
+            query.session_token = this._cookies.S
         }
 
         var queryParts = [];
