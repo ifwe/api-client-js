@@ -377,7 +377,8 @@
                 query: {
                     application_id: 'user',
                     format: 'json'
-                }
+                },
+                cookies: $cookies
             }, angularAdapter);
 
             // Wrap `execute()` in an Angular promise
