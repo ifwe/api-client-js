@@ -6,6 +6,8 @@
     var base64 = context.btoa || require('btoa');
     var Promise = context.Promise || require('bluebird');
 
+    var COOKIE_KEYVALUE_SEPARATOR = /; */;
+
     // ## TaggedApi Constructor
     //
     // Creates a new Tagged API client that is bound to the request's cookies.
@@ -45,7 +47,14 @@
 
         // The user's cookies are required by the API to properly handle the request.
         // Keep a reference so that we can ensure we use updated cookies.
-        this._cookies = options.cookies || {};
+        this._cookies = {};
+        if (options.cookies) {
+            var cookies = options.cookies.split(COOKIE_KEYVALUE_SEPARATOR);
+            cookies.forEach(function(cookie) {
+                var keyValuePair = cookie.split('=', 2);
+                this._cookies[keyValuePair[0]] = keyValuePair[1];
+            }.bind(this));
+        }
 
         this._events = {};
     };
@@ -89,8 +98,16 @@
             query[key] = this._options.query[key];
         }
 
-        if (this._cookies.S) {
-            query.session_token = this._cookies.S
+        var sessionToken;
+
+        if (this._http.getSessionToken) {
+            sessionToken = this._http.getSessionToken();
+        } else if (this._cookies.S) {
+            sessionToken = this._cookies.S;
+        }
+
+        if (sessionToken) {
+            query.session_token = sessionToken;
         }
 
         var queryParts = [];
@@ -317,9 +334,10 @@
     var context = typeof exports !== 'undefined' ? exports : window;
     var Promise = context.Promise || require('bluebird');
 
-    AngularAdapter.$inject = ['$http'];
-    function AngularAdapter($http) {
+    AngularAdapter.$inject = ['$http', '$document'];
+    function AngularAdapter($http, $document) {
         this._$http = $http;
+        this._$document = $document;
     }
 
     AngularAdapter.prototype.post = function(req) {
@@ -327,6 +345,32 @@
             timeout: 10000,
             transformResponse: transformResponse
         }).then(formatResponse);
+    };
+
+    AngularAdapter.prototype.getSessionToken = function() {
+        return getCookieValueByName('S', this._$document[0].cookie);
+    };
+
+    var getCookieValueByName = function(name, cookie) {
+        // Note: Read from the cookie directly to ensure that it isn't outdated.
+        if (!cookie.length) {
+            return null;
+        }
+
+        start = cookie.indexOf(name + "=");
+
+        if (-1 == start) {
+            return null;
+        }
+
+        start = start + name.length + 1;
+        end = cookie.indexOf(";", start);
+
+        if (-1 == end) {
+            end = cookie.length;
+        }
+
+        return unescape(cookie.substring(start, end));
     };
 
     var transformResponse = function(data) {
@@ -361,7 +405,7 @@
         // Registers the module `tagged.service.api` with Angular,
         // allowing Angular apps to declare this module as a dependency.
         // This module has no depdencies of its own.
-        var module = angular.module('tagged.service.api', ['ngCookies']);
+        var module = angular.module('tagged.service.api', []);
 
         // Register `taggedApi` as a factory,
         // which allows Angular us to return the service ourselves.
@@ -369,16 +413,15 @@
         // and the same instance will be passed around through the Angular app.
         module.factory('taggedApi', taggedApiFactory);
 
-        taggedApiFactory.$inject = ['$http', '$cookies', '$q'];
-        function taggedApiFactory($http, $cookies, $q) {
-            var angularAdapter = new TaggedApi.AngularAdapter($http, $cookies);
+        taggedApiFactory.$inject = ['$http', '$q'];
+        function taggedApiFactory($http, $q) {
+            var angularAdapter = new TaggedApi.AngularAdapter($http, $q);
 
             var api = new TaggedApi('/api/', {
                 query: {
                     application_id: 'user',
                     format: 'json'
-                },
-                cookies: $cookies
+                }
             }, angularAdapter);
 
             // Wrap `execute()` in an Angular promise
