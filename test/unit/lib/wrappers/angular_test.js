@@ -22,7 +22,6 @@ describe('Angular Wrapper', function() {
     it('registers module "tagged.service.api"', function() {
         this.angular.module.calledOnce.should.be.true;
         this.angular.module.lastCall.args[0].should.equal('tagged.service.api');
-        this.angular.module.lastCall.args[1].should.deep.equal(['ngCookies']);
     });
 
     it('registers factory "taggedApi"', function() {
@@ -32,17 +31,15 @@ describe('Angular Wrapper', function() {
 
     it('returns a new TaggedApi instance', function() {
         var $http = {};
-        var $cookies = {};
         var $q = {};
-        var api = this.module.factory.lastCall.args[1]($http, $cookies, $q);
+        var api = this.module.factory.lastCall.args[1]($http, $q);
         api.should.be.instanceOf(this.TaggedApi);
     });
 
     it('injects an instance of the Angular adapter', function() {
         var $http = {};
-        var $cookies = {};
         var $q = {};
-        var api = this.module.factory.lastCall.args[1]($http, $cookies, $q);
+        var api = this.module.factory.lastCall.args[1]($http, $q);
         this.TaggedApi.lastCall.args[2].should.be.instanceOf(this.TaggedApi.AngularAdapter);
     });
 });

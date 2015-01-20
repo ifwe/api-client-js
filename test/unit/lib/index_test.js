@@ -15,9 +15,7 @@ describe('Tagged API', function() {
                 defaultParam1: 'defaultValue1',
                 defaultParam2: 'defaultValue2'
             },
-            cookies: {
-                test_cookie: 123
-            }
+            cookies: 'S=test_session_token'
         };
         this.api = new TaggedAPI(this.endpoint, this.options, this.http);
         this.clock = sinon.useFakeTimers();
@@ -184,7 +182,6 @@ describe('Tagged API', function() {
         });
 
         it('passes session token from cookies as a "session_token" query parameter', function() {
-            this.options.cookies.S = 'test_session_token';
             this.api.execute('anything');
             this.clock.tick(1);
             var lastCallArgs = this.http.post.lastCall.args[0];

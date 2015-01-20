@@ -11,7 +11,12 @@ describe('Angular Adapter', function() {
                 }.bind(this));
             }.bind(this))
         };
-        this.adapter = new AngularAdapter(this.$http);
+        this.$document = [
+            {
+                cookie: 'foo=bar;S=test_session_token'
+            }
+        ];
+        this.adapter = new AngularAdapter(this.$http, this.$document);
     });
 
     it('is a constructor', function() {
@@ -20,7 +25,12 @@ describe('Angular Adapter', function() {
 
     it('is injected with $http', function() {
         AngularAdapter.should.have.property('$inject');
-        AngularAdapter.$inject.should.deep.equal(['$http']);
+        AngularAdapter.$inject.should.contain('$http');
+    });
+
+    it('is injected with $document', function() {
+        AngularAdapter.should.have.property('$inject');
+        AngularAdapter.$inject.should.contain('$document');
     });
 
     describe('post()', function() {
@@ -51,6 +61,19 @@ describe('Angular Adapter', function() {
                 data: 'some data'
             });
             result.should.become({ body: 'some data'});
+        });
+    });
+
+    describe('getSessionToken', function() {
+        it('returns session token from document cookie', function() {
+            var sessionToken = this.adapter.getSessionToken();
+            sessionToken.should.equal('test_session_token');
+        });
+
+        it('returns updated session token from document cookie', function() {
+            this.$document[0].cookie = 'S=updated_session_token';
+            var sessionToken = this.adapter.getSessionToken();
+            sessionToken.should.equal('updated_session_token');
         });
     });
 });
