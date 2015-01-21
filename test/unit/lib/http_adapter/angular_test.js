@@ -13,7 +13,7 @@ describe('Angular Adapter', function() {
         };
         this.$document = [
             {
-                cookie: 'foo=bar;S=test_session_token'
+                cookie: 'foo=bar; S=test_session_token'
             }
         ];
         this.adapter = new AngularAdapter(this.$http, this.$document);
@@ -74,6 +74,18 @@ describe('Angular Adapter', function() {
             this.$document[0].cookie = 'S=updated_session_token';
             var sessionToken = this.adapter.getSessionToken();
             sessionToken.should.equal('updated_session_token');
+        });
+
+        it('does not choke on very short cookie names', function() {
+            this.$document[0].cookie = 'SS=not_the_session_cookie; S=updated_session_token';
+            var sessionToken = this.adapter.getSessionToken();
+            sessionToken.should.equal('updated_session_token');
+        });
+
+        it('returns null if no session token is found', function() {
+            this.$document[0].cookie = 'SS=not_the_session_cookie; foo=bar';
+            var sessionToken = this.adapter.getSessionToken();
+            expect(sessionToken).to.be.null;
         });
     });
 });
