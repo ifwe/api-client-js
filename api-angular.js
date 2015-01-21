@@ -333,6 +333,7 @@
 
     var context = typeof exports !== 'undefined' ? exports : window;
     var Promise = context.Promise || require('bluebird');
+    var SESSION_COOKIE_NAME_REGEX = /(?:^| )S=/;
 
     AngularAdapter.$inject = ['$http', '$document'];
     function AngularAdapter($http, $document) {
@@ -348,23 +349,33 @@
     };
 
     AngularAdapter.prototype.getSessionToken = function() {
-        return getCookieValueByName('S', this._$document[0].cookie);
-    };
+        var cookie = this._$document[0].cookie;
 
-    var getCookieValueByName = function(name, cookie) {
         // Note: Read from the cookie directly to ensure that it isn't outdated.
         if (!cookie.length) {
             return null;
         }
 
-        start = cookie.indexOf(name + "=");
+        var found = cookie.match(SESSION_COOKIE_NAME_REGEX);
+
+        if (!found) {
+            return null;
+        }
+
+        var start = found.index;
 
         if (-1 == start) {
             return null;
         }
 
-        start = start + name.length + 1;
-        end = cookie.indexOf(";", start);
+        start += 2;
+
+        // Regex includes leading space, so account for it.
+        if (found[0].charAt(0) === ' ') {
+            start++;
+        }
+
+        var end = cookie.indexOf(";", start);
 
         if (-1 == end) {
             end = cookie.length;
@@ -413,8 +424,8 @@
         // and the same instance will be passed around through the Angular app.
         module.factory('taggedApi', taggedApiFactory);
 
-        taggedApiFactory.$inject = ['$http', '$document'];
-        function taggedApiFactory($http, $document) {
+        taggedApiFactory.$inject = ['$http', '$document', '$q'];
+        function taggedApiFactory($http, $document, $q) {
             var angularAdapter = new TaggedApi.AngularAdapter($http, $document);
 
             var api = new TaggedApi('/api/', {
