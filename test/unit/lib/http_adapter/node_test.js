@@ -53,6 +53,22 @@ describe('Node HTTP Adapter', function() {
             this.request.post.lastCall.args[0].headers.should.have.property('Cookie', cookies);
         });
 
+        it('posts client id header if provided', function() {
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            var cookies = 'testcookies=1';
+            var clientId = 'testClientId';
+            this.http.post({
+                url: url,
+                body: body,
+                cookies: cookies,
+                clientId: clientId
+            });
+            this.request.post.calledOnce.should.be.true;
+            this.request.post.lastCall.args[0].should.have.property('headers');
+            this.request.post.lastCall.args[0].headers.should.have.property('x-tagged-client-id', clientId);
+        });
+
         it('resolves with response', function() {
             var url = 'http://example.com/foo';
             var body = 'post body';
