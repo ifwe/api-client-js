@@ -122,7 +122,8 @@
             body: body,
             url: this._endpoint + "?" + queryString,
             cookies: this._options.cookies,
-            clientId: this._options.clientId
+            clientId: this._options.clientId,
+            secret: this._options.secret
         })
         .then(parseResponseBody)
         .then(resolveQueue.bind(this, this._queue))
@@ -336,16 +337,22 @@
     var Promise = context.Promise || require('bluebird');
     var SESSION_COOKIE_NAME_REGEX = /(?:^| )S=/;
 
-    AngularAdapter.$inject = ['$http', '$document'];
-    function AngularAdapter($http, $document) {
+    AngularAdapter.$inject = ['$http', '$document', '$window'];
+    function AngularAdapter($http, $document, $window) {
         this._$http = $http;
         this._$document = $document;
+        this._$window = $window;
     }
 
     AngularAdapter.prototype.post = function(req) {
+        var headers = {
+            'x-tagged-client-id': req.clientId,
+            'x-tagged-client-url': this._$window.location
+        };
         return this._$http.post(req.url, req.body, {
             timeout: 10000,
-            transformResponse: transformResponse
+            transformResponse: transformResponse,
+            headers: headers
         }).then(formatResponse);
     };
 
@@ -425,15 +432,16 @@
         // and the same instance will be passed around through the Angular app.
         module.factory('taggedApi', taggedApiFactory);
 
-        taggedApiFactory.$inject = ['$http', '$document', '$q'];
-        function taggedApiFactory($http, $document, $q) {
-            var angularAdapter = new TaggedApi.AngularAdapter($http, $document);
+        taggedApiFactory.$inject = ['$http', '$document', '$q', '$window'];
+        function taggedApiFactory($http, $document, $q, $window) {
+            var angularAdapter = new TaggedApi.AngularAdapter($http, $document, $window);
 
             var api = new TaggedApi('/api/', {
                 query: {
                     application_id: 'user',
                     format: 'json'
-                }
+                },
+                clientId: this.clientId
             }, angularAdapter);
 
             // Wrap `execute()` in an Angular promise
