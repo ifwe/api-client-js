@@ -26,17 +26,17 @@ describe('Node HTTP Adapter', function() {
     describe('post()', function() {
         beforeEach(function() {
             this.http = new Http(this.request);
+            this.url = 'http://example.com/foo';
+            this.body = 'post body';
         });
 
         it('posts body to specified url', function() {
-            var url = 'http://example.com/foo';
-            var body = 'post body';
             this.http.post({
-                url: url,
-                body: body
+                url: this.url,
+                body: this.body
             });
             this.request.post.calledOnce.should.be.true;
-            this.request.post.lastCall.args[0].should.have.property('url', url);
+            this.request.post.lastCall.args[0].should.have.property('url', this.url);
         });
 
         it('posts cookies to specified url', function() {
@@ -53,29 +53,28 @@ describe('Node HTTP Adapter', function() {
             this.request.post.lastCall.args[0].headers.should.have.property('Cookie', cookies);
         });
 
-        it('posts client id header if provided', function() {
-            var url = 'http://example.com/foo';
-            var body = 'post body';
+        it('posts client id and client secret to header if provided', function() {
             var cookies = 'testcookies=1';
             var clientId = 'testClientId';
+            var clientSecret = 'testSecret';
             this.http.post({
-                url: url,
-                body: body,
+                url: this.url,
+                body: this.body,
                 cookies: cookies,
-                clientId: clientId
+                clientId: clientId,
+                secret: clientSecret
             });
             this.request.post.calledOnce.should.be.true;
             this.request.post.lastCall.args[0].should.have.property('headers');
             this.request.post.lastCall.args[0].headers.should.have.property('x-tagged-client-id', clientId);
+            this.request.post.lastCall.args[0].headers.should.have.property('x-tagged-client-secret', clientSecret);
         });
 
         it('resolves with response', function() {
-            var url = 'http://example.com/foo';
-            var body = 'post body';
             var expectedBody = 'expected body';
             var result = this.http.post({
-                url: url,
-                body: body
+                url: this.url,
+                body: this.body
             });
 
             this.request.respondWith(null, {
@@ -88,17 +87,16 @@ describe('Node HTTP Adapter', function() {
         });
 
         it('rejects with error', function() {
-            var url = 'http://example.com/foo';
-            var body = 'post body';
             var error = 'test error';
             var result = this.http.post({
-                url: url,
-                body: body
+                url: this.url,
+                body: this.body
             });
 
             this.request.respondWith(error);
 
             return result.should.be.rejectedWith(error);
         });
+
     });
 });

@@ -42,4 +42,5 @@ describe('Angular Wrapper', function() {
         var api = this.module.factory.lastCall.args[1]($http, $q);
         this.TaggedApi.lastCall.args[2].should.be.instanceOf(this.TaggedApi.AngularAdapter);
     });
+
 });

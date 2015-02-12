@@ -16,7 +16,10 @@ describe('Angular Adapter', function() {
                 cookie: 'foo=bar; S=test_session_token'
             }
         ];
-        this.adapter = new AngularAdapter(this.$http, this.$document);
+        this.$window = {
+            location: '/foo'
+        };
+        this.adapter = new AngularAdapter(this.$http, this.$document, this.$window);
     });
 
     it('is a constructor', function() {
@@ -61,6 +64,22 @@ describe('Angular Adapter', function() {
                 data: 'some data'
             });
             result.should.become({ body: 'some data'});
+        });
+
+        it('sets client ID and url in headers', function() {
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            var clientId = 'testclientid';
+            var location = '/foo';
+            this.adapter.post({
+                url: url,
+                body: body,
+                clientId: clientId
+            });
+            this.$http.post.calledOnce.should.be.true;
+            this.$http.post.lastCall.args[2].should.have.property('headers');
+            this.$http.post.lastCall.args[2].headers['x-tagged-client-id'].should.equal(clientId);
+            this.$http.post.lastCall.args[2].headers['x-tagged-client-url'].should.equal(location);
         });
     });
 
