@@ -81,6 +81,18 @@ describe('Angular Adapter', function() {
             this.$http.post.lastCall.args[2].headers['x-tagged-client-id'].should.equal(clientId);
             this.$http.post.lastCall.args[2].headers['x-tagged-client-url'].should.equal(location);
         });
+
+        it('sets content-type header', function() {
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            var expectedContentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+            this.adapter.post({
+                url: url,
+                body: body
+            });
+            this.$http.post.calledOnce.should.be.true;
+            this.$http.post.lastCall.args[2].headers.should.have.property('Content-Type', expectedContentType);
+        });
     });
 
     describe('getSessionToken', function() {
