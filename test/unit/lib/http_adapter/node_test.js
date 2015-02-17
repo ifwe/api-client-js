@@ -70,6 +70,19 @@ describe('Node HTTP Adapter', function() {
             this.request.post.lastCall.args[0].headers.should.have.property('x-tagged-client-secret', clientSecret);
         });
 
+        it('sets content-type header', function() {
+            var expectedContentType = 'application/x-www-form-urlencoded; charset=UTF-8';
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            this.http.post({
+                url: url,
+                body: body
+            });
+            this.request.post.calledOnce.should.be.true;
+            this.request.post.lastCall.args[0].should.have.property('headers');
+            this.request.post.lastCall.args[0].headers.should.have.property('Content-Type', expectedContentType);
+        });
+
         it('resolves with response', function() {
             var expectedBody = 'expected body';
             var result = this.http.post({
