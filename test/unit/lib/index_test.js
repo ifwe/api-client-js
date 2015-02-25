@@ -16,7 +16,10 @@ describe('Tagged API', function() {
                 defaultParam2: 'defaultValue2'
             },
             cookies: 'S=test_session_token',
-            clientId: 'testClientId'
+            clientId: 'testClientId',
+            headers: {
+                X_Custom_Test: 'text'
+            }
         };
         this.api = new TaggedAPI(this.endpoint, this.options, this.http);
         this.clock = sinon.useFakeTimers();
@@ -182,6 +185,13 @@ describe('Tagged API', function() {
             this.http.post.lastCall.args[0].cookies.should.contain(this.options.cookies);
         });
 
+        it('passes custom headers to http adapter post()', function() {
+            this.api.execute('anything');
+            this.clock.tick(1);
+            this.http.post.lastCall.args[0].should.have.property('headers');
+            this.http.post.lastCall.args[0].headers.should.have.property('X_Custom_Test', 'text');
+        })
+
         it('passes client id to http adapter post()', function() {
             this.api.execute('anything');
             this.clock.tick(1);
@@ -256,6 +266,27 @@ describe('Tagged API', function() {
             };
             this.middleware(this.req, this.res, this.next);
             this.req.api._options.cookies.should.equal(this.req.headers.cookie);
+        });
+
+        it('does not pass headers to api instance by default', function() {
+            this.req.headers = {
+                X_Custom_Test: 'text'
+            };
+            this.middleware(this.req, this.res, this.next);
+            this.req.api._options.should.not.have.property('headers');
+        });
+
+        it('passes headers to api instance when passHeaders is true', function() {
+            this.middleware = TaggedAPI.middleware('_', {
+                passHeaders: true
+            });
+            this.req.headers = {
+                X_Custom_Test: 'text'
+            };
+            this.middleware(this.req, this.res, this.next);
+            this.req.api._options.should.have.property('headers');
+            this.req.api._options.headers.should.have.property('X_Custom_Test');
+            this.req.api._options.headers.X_Custom_Test.should.equal('text');
         });
 
         it('calls next()', function() {
