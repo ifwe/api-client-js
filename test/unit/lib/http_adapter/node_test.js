@@ -83,6 +83,19 @@ describe('Node HTTP Adapter', function() {
             this.request.post.lastCall.args[0].headers.should.have.property('Content-Type', expectedContentType);
         });
 
+        it('calls with extra headers if headrs were sent', function() {
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            this.http.post({
+                url: url,
+                body: body,
+                headers: {
+                    X_Custom_Test: 'text'
+                }
+            });
+            this.request.post.lastCall.args[0].headers.should.have.property('X_Custom_Test', 'text');
+        });
+
         it('resolves with response', function() {
             var expectedBody = 'expected body';
             var result = this.http.post({
