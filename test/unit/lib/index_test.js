@@ -276,17 +276,20 @@ describe('Tagged API', function() {
             this.req.api._options.should.not.have.property('headers');
         });
 
-        it('passes headers to api instance when passHeaders is true', function() {
-            this.middleware = TaggedAPI.middleware('_', {
-                passHeaders: true
+        it('passes headers in whitelist to api instance', function() {
+            this.middleware = TaggedAPI.middleware('anything', {
+                passHeaders: ['foo', 'bar']
             });
             this.req.headers = {
-                X_Custom_Test: 'text'
+                foo: 'header_foo',
+                bar: 'header_bar',
+                derp: 'header_derp'
             };
             this.middleware(this.req, this.res, this.next);
             this.req.api._options.should.have.property('headers');
-            this.req.api._options.headers.should.have.property('X_Custom_Test');
-            this.req.api._options.headers.X_Custom_Test.should.equal('text');
+            this.req.api._options.headers.should.have.property('foo', 'header_foo');
+            this.req.api._options.headers.should.have.property('bar', 'header_bar');
+            this.req.api._options.headers.should.not.have.property('derp');
         });
 
         it('calls next()', function() {
