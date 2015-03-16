@@ -204,8 +204,7 @@
             var newOpts = {
                 query: {
                     application_id: 'user',
-                    format: 'JSON',
-                    session_token: req.cookies && req.cookies.S
+                    format: 'JSON'
                 },
                 params: {
                     api_signature: ''
@@ -447,9 +446,9 @@
         // and the same instance will be passed around through the Angular app.
         module.factory('taggedApi', taggedApiFactory);
 
-        taggedApiFactory.$inject = ['$http', '$document', '$q', '$window'];
-        function taggedApiFactory($http, $document, $q, $window) {
-            var angularAdapter = new TaggedApi.AngularAdapter($http, $document, $window);
+        taggedApiFactory.$inject = ['$http', '$q'];
+        function taggedApiFactory($http, $q) {
+            var angularAdapter = new TaggedApi.AngularAdapter($http);
 
             var api = new TaggedApi('/api/', {
                 query: {
