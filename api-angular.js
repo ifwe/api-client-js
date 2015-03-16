@@ -4,7 +4,9 @@
 
     var context = typeof exports !== 'undefined' ? exports : window;
     var base64 = context.btoa || require('btoa');
-    var Promise = context.Promise || require('bluebird');
+    if (typeof(require) === 'function') {
+        var Promise = context.Promise || require('bluebird');
+    }
 
     var COOKIE_KEYVALUE_SEPARATOR = /; */;
 
@@ -347,7 +349,6 @@
     'use strict';
 
     var context = typeof exports !== 'undefined' ? exports : window;
-    var Promise = context.Promise || require('bluebird');
     var SESSION_COOKIE_NAME_REGEX = /(?:^| )S=/;
 
     AngularAdapter.$inject = ['$http', '$document', '$window'];
