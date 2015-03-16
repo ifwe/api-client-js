@@ -11,15 +11,10 @@ describe('Angular Adapter', function() {
                 }.bind(this));
             }.bind(this))
         };
-        this.$document = [
-            {
-                cookie: 'foo=bar; S=test_session_token'
-            }
-        ];
         this.$window = {
             location: '/foo'
         };
-        this.adapter = new AngularAdapter(this.$http, this.$document, this.$window);
+        this.adapter = new AngularAdapter(this.$http, this.$window);
     });
 
     it('is a constructor', function() {
@@ -31,9 +26,9 @@ describe('Angular Adapter', function() {
         AngularAdapter.$inject.should.contain('$http');
     });
 
-    it('is injected with $document', function() {
+    it('is injected with $window', function() {
         AngularAdapter.should.have.property('$inject');
-        AngularAdapter.$inject.should.contain('$document');
+        AngularAdapter.$inject.should.contain('$window');
     });
 
     describe('post()', function() {
@@ -92,31 +87,6 @@ describe('Angular Adapter', function() {
             });
             this.$http.post.calledOnce.should.be.true;
             this.$http.post.lastCall.args[2].headers.should.have.property('Content-Type', expectedContentType);
-        });
-    });
-
-    describe('getSessionToken', function() {
-        it('returns session token from document cookie', function() {
-            var sessionToken = this.adapter.getSessionToken();
-            sessionToken.should.equal('test_session_token');
-        });
-
-        it('returns updated session token from document cookie', function() {
-            this.$document[0].cookie = 'S=updated_session_token';
-            var sessionToken = this.adapter.getSessionToken();
-            sessionToken.should.equal('updated_session_token');
-        });
-
-        it('does not choke on very short cookie names', function() {
-            this.$document[0].cookie = 'SS=not_the_session_cookie; S=updated_session_token';
-            var sessionToken = this.adapter.getSessionToken();
-            sessionToken.should.equal('updated_session_token');
-        });
-
-        it('returns null if no session token is found', function() {
-            this.$document[0].cookie = 'SS=not_the_session_cookie; foo=bar';
-            var sessionToken = this.adapter.getSessionToken();
-            expect(sessionToken).to.be.null;
         });
     });
 });

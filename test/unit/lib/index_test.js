@@ -15,7 +15,7 @@ describe('Tagged API', function() {
                 defaultParam1: 'defaultValue1',
                 defaultParam2: 'defaultValue2'
             },
-            cookies: 'S=test_session_token',
+            cookies: 'L=test_autologin_token',
             clientId: 'testClientId',
             headers: {
                 X_Custom_Test: 'text'
@@ -197,14 +197,6 @@ describe('Tagged API', function() {
             this.clock.tick(1);
             this.http.post.lastCall.args[0].should.have.property('clientId');
             this.http.post.lastCall.args[0].clientId.should.contain(this.options.clientId);
-        });
-
-        it('passes session token from cookies as a "session_token" query parameter', function() {
-            this.api.execute('anything');
-            this.clock.tick(1);
-            var lastCallArgs = this.http.post.lastCall.args[0];
-            lastCallArgs.should.have.property('url');
-            lastCallArgs.url.should.contain('session_token=test_session_token');
         });
 
         it('resolves promise with parsed response data', function() {

@@ -100,18 +100,6 @@
             query[key] = this._options.query[key];
         }
 
-        var sessionToken;
-
-        if (this._http.getSessionToken) {
-            sessionToken = this._http.getSessionToken();
-        } else if (this._cookies.S) {
-            sessionToken = this._cookies.S;
-        }
-
-        if (sessionToken) {
-            query.session_token = sessionToken;
-        }
-
         var queryParts = [];
         for (var i in query) {
             if (!query.hasOwnProperty(i)) continue;
@@ -348,12 +336,10 @@
     'use strict';
 
     var context = typeof exports !== 'undefined' ? exports : window;
-    var SESSION_COOKIE_NAME_REGEX = /(?:^| )S=/;
 
-    AngularAdapter.$inject = ['$http', '$document', '$window'];
-    function AngularAdapter($http, $document, $window) {
+    AngularAdapter.$inject = ['$http', '$window'];
+    function AngularAdapter($http, $window) {
         this._$http = $http;
-        this._$document = $document;
         this._$window = $window;
     }
 
@@ -368,42 +354,6 @@
             transformResponse: transformResponse,
             headers: headers
         }).then(formatResponse);
-    };
-
-    AngularAdapter.prototype.getSessionToken = function() {
-        var cookie = this._$document[0].cookie;
-
-        // Note: Read from the cookie directly to ensure that it isn't outdated.
-        if (!cookie.length) {
-            return null;
-        }
-
-        var found = cookie.match(SESSION_COOKIE_NAME_REGEX);
-
-        if (!found) {
-            return null;
-        }
-
-        var start = found.index;
-
-        if (-1 == start) {
-            return null;
-        }
-
-        start += 2;
-
-        // Regex includes leading space, so account for it.
-        if (found[0].charAt(0) === ' ') {
-            start++;
-        }
-
-        var end = cookie.indexOf(";", start);
-
-        if (-1 == end) {
-            end = cookie.length;
-        }
-
-        return unescape(cookie.substring(start, end));
     };
 
     var transformResponse = function(data) {
@@ -446,9 +396,9 @@
         // and the same instance will be passed around through the Angular app.
         module.factory('taggedApi', taggedApiFactory);
 
-        taggedApiFactory.$inject = ['$http', '$q'];
-        function taggedApiFactory($http, $q) {
-            var angularAdapter = new TaggedApi.AngularAdapter($http);
+        taggedApiFactory.$inject = ['$http', '$q', '$window'];
+        function taggedApiFactory($http, $q, $window) {
+            var angularAdapter = new TaggedApi.AngularAdapter($http, $window);
 
             var api = new TaggedApi('/api/', {
                 query: {
