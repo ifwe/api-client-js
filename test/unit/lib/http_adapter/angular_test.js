@@ -12,7 +12,9 @@ describe('Angular Adapter', function() {
             }.bind(this))
         };
         this.$window = {
-            location: '/foo'
+            location: {
+                href: '/foo'
+            }
         };
         this.adapter = new AngularAdapter(this.$http, this.$window);
     });
