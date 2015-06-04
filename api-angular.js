@@ -346,7 +346,7 @@
     AngularAdapter.prototype.post = function(req) {
         var headers = {
             'x-tagged-client-id': req.clientId,
-            'x-tagged-client-url': this._$window.location,
+            'x-tagged-client-url': this._$window.location.href,
             'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         };
         return this._$http.post(req.url, req.body, {

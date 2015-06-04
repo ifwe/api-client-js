@@ -1,6 +1,6 @@
 {
   "name": "tagged-api",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "API client for Tagged with support for nodejs and angularjs",
   "main": "lib/index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/tagged/api-client-js.git"
+    "url": "http://github.com/ifwe/api-client-js.git"
   },
   "keywords": [
     "api",
@@ -18,7 +18,7 @@
   "author": "Web Team Awesome",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tagged/api-client-js/issues"
+    "url": "https://github.com/ifwe/api-client-js/issues"
   },
   "dependencies": {
     "bluebird": "^2.2.2",
@@ -26,7 +26,7 @@
     "request": "^2.37.0",
     "grunt-contrib-uglify": "^0.5.0"
   },
-  "homepage": "https://github.com/tagged/api-client-js",
+  "homepage": "https://github.com/ifwe/api-client-js",
   "devDependencies": {
     "blanket": "^1.1.6",
     "chai": "^1.9.1",
