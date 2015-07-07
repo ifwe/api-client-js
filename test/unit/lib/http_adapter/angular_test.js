@@ -90,5 +90,16 @@ describe('Angular Adapter', function() {
             this.$http.post.calledOnce.should.be.true;
             this.$http.post.lastCall.args[2].headers.should.have.property('Content-Type', expectedContentType);
         });
+
+        it('sets ajax header', function() {
+            var url = 'http://example.com/foo';
+            var body = 'post body';
+            this.adapter.post({
+                url: url,
+                body: body
+            });
+            this.$http.post.calledOnce.should.be.true;
+            this.$http.post.lastCall.args[2].headers.should.have.property('X-Requested-With', 'XMLHttpRequest');
+        });
     });
 });
