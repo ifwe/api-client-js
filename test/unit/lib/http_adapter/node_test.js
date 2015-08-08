@@ -124,5 +124,27 @@ describe('Node HTTP Adapter', function() {
             return result.should.be.rejectedWith(error);
         });
 
+        describe('timeout', function() {
+            it('defaults to 10s', function() {
+                this.http.post({
+                    url: 'url',
+                    body: 'body'
+                });
+                this.request.post.lastCall.args[0].should.contain({
+                    timeout: 10000
+                });
+            });
+
+            it('can be overwritten', function() {
+                this.http.setTimeout(30000);
+                this.http.post({
+                    url: 'url',
+                    body: 'body'
+                });
+                this.request.post.lastCall.args[0].should.contain({
+                    timeout: 30000
+                });
+            });
+        });
     });
 });

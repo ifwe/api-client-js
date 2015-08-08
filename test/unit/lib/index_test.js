@@ -344,4 +344,29 @@ describe('Tagged API', function() {
             });
         });
     });
+
+    describe('timeout', function() {
+        beforeEach(function() {
+            sinon.spy(this.http, 'setTimeout');
+        });
+
+        it('defaults to 10s', function() {
+            this.api = new TaggedAPI(this.endpoint, this.options, this.http);
+            this.http.setTimeout.calledWith(10000).should.be.true;
+        });
+
+        it('can be specified', function() {
+            this.options.timeout = 30000;
+            this.api = new TaggedAPI(this.endpoint, this.options, this.http);
+            this.http.setTimeout.calledWith(30000).should.be.true;
+        });
+
+        [null, 0, -1000, true, false, 'string', { object: 'object' }, ['array']].forEach(function(value) {
+            it('is set to 10s if invalid value ' + value + ' is used', function() {
+                this.options.timeout = value;
+                this.api = new TaggedAPI(this.endpoint, this.options, this.http);
+                this.http.setTimeout.calledWith(10000).should.be.true;
+            });
+        });
+    });
 });
