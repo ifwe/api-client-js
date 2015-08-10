@@ -1,6 +1,8 @@
 var Promise = require('bluebird');
 
 var HttpMock = function() {
+    var timeout = 10000;
+
     this.deferreds = [];
 
     this.post = sinon.spy(function() {
@@ -29,6 +31,10 @@ var HttpMock = function() {
         if (this.deferreds.length) {
             throw new Error("" + this.deferreds.length + " unresolved requests remaining.");
         }
+    };
+
+    this.setTimeout = function(_timeout) {
+        timeout = _timeout;
     };
 };
 

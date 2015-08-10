@@ -101,5 +101,28 @@ describe('Angular Adapter', function() {
             this.$http.post.calledOnce.should.be.true;
             this.$http.post.lastCall.args[2].headers.should.have.property('X-Requested-With', 'XMLHttpRequest');
         });
+
+        describe('timeout', function() {
+            it('defaults to 10s', function() {
+                this.adapter.post({
+                    url: 'url',
+                    body: 'body'
+                });
+                this.$http.post.lastCall.args[2].should.contain({
+                    timeout: 10000
+                });
+            });
+
+            it('can be overwritten', function() {
+                this.adapter.setTimeout(30000);
+                this.adapter.post({
+                    url: 'url',
+                    body: 'body'
+                });
+                this.$http.post.lastCall.args[2].should.contain({
+                    timeout: 30000
+                });
+            });
+        });
     });
 });

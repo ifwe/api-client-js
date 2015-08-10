@@ -23,14 +23,25 @@ Getting Started
 // Low level access
 var TaggedApi = require('tagged-api');
 var api = new TaggedApi('http://www.tagged.com/api.php', {
-    session_id: 'abc123' // Session cookie ID from request
+    clientId: /* your Tagged client id */,
+    secret: /* your Tagged client secret */,
+    session_id: 'abc123', // Session cookie ID from request
+    timeout: 10000        // Set http timeout (default 10s)
 });
 
 // Or use middleware to automatically create an api instance for each request
 var connect = require('connect');
 var app = connect();
 var TaggedApi = require('tagged-api');
-app.use(TaggedApi.middleware());
+app.use(TaggedApi.middleware(host, {
+    clientId: /* your Tagged client id */,
+    secret: /* your Tagged client secret */,
+    passHeaders: [        // The following list of headers will be passed from the client to the API server
+        'user-agent',
+        'x-forwarded-for'
+    ],
+    timeout: 10000        // Set http timeout (default 10s)
+}));
 
 app.get('/', function(req, res) {
     // Make API calls on behalf of the user that is authenticated with this request
@@ -68,7 +79,7 @@ api.execute('im.send', {
 }).done();
 ```
 
-**Note:** All API calls are executed on behalf of the authenticated user, or anonymously if not 
+**Note:** All API calls are executed on behalf of the authenticated user, or anonymously if not
 authenticated. **Executing API calls on behalf of another user is not supported.**
 
 Executing Multiple API Calls
