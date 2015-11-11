@@ -233,7 +233,7 @@ describe('Tagged API', function() {
         });
 
         it('resolves promise if response bdy is null', function() {
-            var expectedResult = {stat: 'ok'};
+            var expectedResult = {result: null, stat: 'ok'};
             var promise = this.api.execute('anything');
             this.clock.tick(1);
             this.http.resolve({

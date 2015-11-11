@@ -153,6 +153,7 @@
             // If the API returns nothing then assume it's ok.
             if (result == null) {
                 result = {
+                    result: null,
                     stat: 'ok'
                 };
             }
