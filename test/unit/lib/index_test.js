@@ -223,7 +223,6 @@ describe('Tagged API', function() {
         });
 
         it('rejects promise if response contains stat !== "ok"', function() {
-            var expectedResult = { foo: 'bar' };
             var promise = this.api.execute('anything');
             this.clock.tick(1);
             this.http.resolve({
@@ -231,6 +230,17 @@ describe('Tagged API', function() {
             });
             this.http.verifyNoPendingRequests();
             return promise.should.be.rejected;
+        });
+
+        it('resolves promise if response bdy is null', function() {
+            var expectedResult = {stat: 'ok'};
+            var promise = this.api.execute('anything');
+            this.clock.tick(1);
+            this.http.resolve({
+                body: null
+            });
+            this.http.verifyNoPendingRequests();
+            return promise.should.eventually.deep.equal(expectedResult);
         });
     });
 
