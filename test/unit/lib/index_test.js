@@ -145,6 +145,29 @@ describe('Tagged API', function() {
             this.http.post.calledOnce.should.be.true;
         });
 
+        describe('max queue size', function() {
+            it('immediately sends off http request if queue exceeds max queue size', function() {
+                this.api.setMaxQueueSize(3);
+                this.api.execute("one");
+                this.api.execute("two");
+                this.http.post.calledOnce.should.be.false;
+                this.api.execute("three");
+                this.http.post.calledOnce.should.be.true;
+                this.api.execute("four");
+                this.api.execute("five");
+                this.http.post.calledTwice.should.be.false;
+                this.clock.tick(1);
+                this.http.post.calledTwice.should.be.true;
+            });
+
+            it('can be retrieved', function() {
+                this.api.setMaxQueueSize(3);
+                this.api.getMaxQueueSize().should.equal(3);
+                this.api.setMaxQueueSize(10);
+                this.api.getMaxQueueSize().should.equal(10);
+            });
+        });
+
         // WTA-537
         it('does not bleed parameters', function() {
             this.api.execute("im.send", {
