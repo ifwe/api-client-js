@@ -29,6 +29,10 @@
         // to the queue and processed as a whole on the next tick.
         this._queue = [];
 
+        // When the queue size exceeds this value, an HTTP request will be trigged
+        // to flush the queue. Defaults to `null`, meaning no limit.
+        this._maxQueueSize = null;
+
         // This timeout is used to trigger the HTTP request on the next tick. All
         // API calls that are added to the queue will be batched together.
         this._batchTimeout = null;
@@ -73,6 +77,16 @@
         return base64(Math.random() * (100000000)).substr(0, 10);
     };
 
+    // Sets the max queue size.
+    TaggedApi.prototype.setMaxQueueSize = function(maxQueueSize) {
+        this._maxQueueSize = maxQueueSize;
+    };
+
+    // Returns the max queue size, or null if unlimited.
+    TaggedApi.prototype.getMaxQueueSize = function(maxQueueSize) {
+        return this._maxQueueSize;
+    };
+
     // Executes an API call with given method and params. Returns a promise that
     // is resolved with the API call's response data, or rejected if the API response
     // cannot be parsed as JSON. Additionally, if the result contains a `stat` property
@@ -91,7 +105,10 @@
                 deferred: {resolve: resolve, reject: reject}
             });
 
-            if (null === this._batchTimeout) {
+            if (this._maxQueueSize && this._queue.length >= this._maxQueueSize) {
+                // Flush the queue
+                this._postToApi();
+            } else if (null === this._batchTimeout) {
                 this._batchTimeout = setTimeout(this._postToApi.bind(this), 1);
             }
         }.bind(this));
