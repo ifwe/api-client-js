@@ -70,6 +70,17 @@ describe('Node HTTP Adapter', function() {
             this.request.post.lastCall.args[0].headers.should.have.property('x-tagged-client-secret', clientSecret);
         });
 
+        it('uses keepalive agent', function() {
+            var KeepAliveAgent = require('agentkeepalive');
+            this.http.post({
+                url: this.url,
+                body: this.body
+            });
+            this.request.post.calledOnce.should.be.true;
+            this.request.post.lastCall.args[0].should.have.property('agent');
+            this.request.post.lastCall.args[0].agent.should.be.instanceOf(KeepAliveAgent);
+        });
+
         it('sets content-type header', function() {
             var expectedContentType = 'application/x-www-form-urlencoded; charset=UTF-8';
             var url = 'http://example.com/foo';
