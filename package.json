@@ -1,6 +1,6 @@
 {
   "name": "tagged-api",
-  "version": "0.1.24",
+  "version": "0.1.25",
   "description": "API client for Tagged with support for nodejs and angularjs",
   "main": "lib/index.js",
   "scripts": {
@@ -21,24 +21,24 @@
     "url": "https://github.com/ifwe/api-client-js/issues"
   },
   "dependencies": {
-    "agentkeepalive": "2.0.3",
-    "bluebird": "^2.2.2",
-    "btoa": "^1.1.2",
-    "grunt-contrib-uglify": "^0.5.0",
-    "request": "^2.37.0"
+    "agentkeepalive": "2.1.1",
+    "bluebird": "3.3.5",
+    "btoa": "1.1.2",
+    "request": "2.72.0"
   },
   "homepage": "https://github.com/ifwe/api-client-js",
   "devDependencies": {
-    "blanket": "^1.1.6",
-    "chai": "^1.9.1",
-    "grunt": "^0.4.5",
-    "grunt-contrib-clean": "^0.5.0",
-    "grunt-contrib-watch": "^0.6.1",
-    "grunt-docco": "^0.3.3",
-    "grunt-mocha-test": "^0.11.0",
-    "mocha": "^1.20.1",
-    "sinon": "^1.10.3",
-    "chai-as-promised": "^4.1.1",
-    "grunt-contrib-concat": "^0.5.0"
+    "blanket": "1.2.3",
+    "chai": "3.5.0",
+    "chai-as-promised": "5.3.0",
+    "grunt": "0.4.5",
+    "grunt-contrib-clean": "1.0.0",
+    "grunt-contrib-concat": "1.0.1",
+    "grunt-contrib-uglify": "1.0.1",
+    "grunt-contrib-watch": "1.0.0",
+    "grunt-docco": "0.4.0",
+    "grunt-mocha-test": "0.12.7",
+    "mocha": "2.4.5",
+    "sinon": "1.17.3"
   }
 }
