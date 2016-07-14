@@ -22,7 +22,8 @@ describe('Tagged API', function() {
             }
         };
         this.api = new TaggedAPI(this.endpoint, this.options, this.http);
-        this.clock = sinon.useFakeTimers();
+        this.fakeNow = 100;
+        this.clock = sinon.useFakeTimers(this.fakeNow);
     });
 
     afterEach(function() {
@@ -298,7 +299,7 @@ describe('Tagged API', function() {
                 X_Custom_Test: 'text'
             };
             this.middleware(this.req, this.res, this.next);
-            this.req.api._options.should.not.have.property('headers');
+            expect(this.req.api._options.headers).to.be.undefined;
         });
 
         it('passes headers in whitelist to api instance', function() {
@@ -374,6 +375,120 @@ describe('Tagged API', function() {
             this.http.verifyNoPendingRequests();
             return promise.finally(function() {
                 spy.called.should.be.false;
+            });
+        });
+
+        describe('queue timing', function() {
+            describe('in node environments', function() {
+                beforeEach(function() {
+                    this.stubHightResolutionTimestamp = [123, 456];
+                    sinon.stub(process, 'hrtime').returns(this.stubHightResolutionTimestamp);
+                });
+
+                afterEach(function() {
+                    process.hrtime.restore();
+                });
+
+                it('includes timeStart as high-resolution timestamp', function(done) {
+                    this.api.on('ok', function(request) {
+                        request.timeStart.should.deep.equal(this.stubHightResolutionTimestamp);
+                        done();
+                    }.bind(this));
+                    this.api.execute("im.send");
+                    this.clock.tick(1);
+                    this.http.resolve({
+                        // ugly response body :(
+                        body: '["{\\"stat\\":\\"ok\\"}"]'
+                    });
+                });
+            });
+
+            describe('in browser environments that support performance.now()', function() {
+                beforeEach(function() {
+                    this.stubHightResolutionTimestamp = [123, 456];
+                    this.hrtime = process.hrtime;
+                    process.hrtime = undefined;
+                    GLOBAL.window = {
+                        performance: {
+                            now: sinon.stub().returns(123.456)
+                        }
+                    };
+                });
+
+                afterEach(function() {
+                    process.hrtime = this.hrtime;
+                    delete GLOBAL.window;
+                });
+
+                it('includes timeStart as high-resolution timestamp', function(done) {
+                    this.api.on('ok', function(request) {
+                        request.timeStart.should.deep.equal(this.stubHightResolutionTimestamp);
+                        done();
+                    }.bind(this));
+                    this.api.execute("im.send");
+                    this.clock.tick(1);
+                    this.http.resolve({
+                        // ugly response body :(
+                        body: '["{\\"stat\\":\\"ok\\"}"]'
+                    });
+                });
+            });
+
+            describe('in browser environments that return strange values for performance.now()', function() {
+                beforeEach(function() {
+                    this.stubHightResolutionTimestamp = [123, 456];
+                    this.hrtime = process.hrtime;
+                    process.hrtime = undefined;
+                    GLOBAL.window = {
+                        performance: {
+                            now: sinon.stub().returns('not a high-resolution timestamp')
+                        }
+                    };
+                });
+
+                afterEach(function() {
+                    process.hrtime = this.hrtime;
+                    delete GLOBAL.window;
+                });
+
+                it('falls back to low-resolution timeStart in high-resolution format', function(done) {
+                    this.api.on('ok', function(request) {
+                        request.timeStart.should.deep.equal([this.fakeNow, 0]);
+                        done();
+                    }.bind(this));
+                    this.api.execute("im.send");
+                    this.clock.tick(1);
+                    this.http.resolve({
+                        // ugly response body :(
+                        body: '["{\\"stat\\":\\"ok\\"}"]'
+                    });
+                });
+            });
+
+            describe('in browser environments that do not support-high resolution timestamps', function() {
+                beforeEach(function() {
+                    this.hrtime = process.hrtime;
+                    process.hrtime = undefined;
+                    GLOBAL.window = {};
+                });
+
+                afterEach(function() {
+                    process.hrtime = this.hrtime;
+                    delete GLOBAL.window;
+                });
+
+                it('falls back to low-resolution timeStart in high-resolution format', function(done) {
+                    this.api.on('ok', function(request) {
+                        request.timeStart.should.deep.equal([this.fakeNow, 0]);
+                        done();
+                    }.bind(this));
+                    this.api.execute("im.send");
+                    this.clock.tick(1);
+                    this.http.resolve({
+                        // ugly response body :(
+                        body: '["{\\"stat\\":\\"ok\\"}"]'
+                    });
+                });
             });
         });
     });
