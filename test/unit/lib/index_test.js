@@ -266,6 +266,45 @@ describe('Tagged API', function() {
             this.http.verifyNoPendingRequests();
             return promise.should.eventually.deep.equal(expectedResult);
         });
+
+        describe('caching', function() {
+            it('does not cache duplicate calls by default', function() {
+                this.api.execute('floop');
+                this.api.execute('floop');
+                this.clock.tick(1);
+                this.http.post.lastCall.args[0].body.match(/method=floop/g).should.have.lengthOf(2);
+            });
+
+            it('optionally cache duplicate calls', function() {
+                this.api.execute('floop', {bloop: 'blip'}, {cache: true});
+                this.api.execute('floop', {bloop: 'blip'}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.lastCall.args[0].body.match(/method=floop/g).should.have.lengthOf(1);
+            });
+
+            it('optionally caches for custom amount of time', function() {
+                this.api.execute('floop', {}, {cache: 100});
+                this.clock.tick(100001);
+                this.api.execute('floop', {}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.calledTwice.should.be.true;
+            });
+
+            it('does not duplicate calls if made before cache expiry time', function() {
+                this.api.execute('floop', {}, {cache: 100});
+                this.clock.tick(90000);
+                this.api.execute('floop', {}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.calledTwice.should.be.false;
+            });
+
+            it('does not use cache if params are different', function() {
+                this.api.execute('floop', {bloop: 'blip'}, {cache: true});
+                this.api.execute('floop', {bloop: 'bleep'}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.lastCall.args[0].body.match(/method=floop/g).should.have.lengthOf(2);
+            });
+        });
     });
 
     describe('middleware()', function() {
