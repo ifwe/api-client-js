@@ -266,6 +266,63 @@ describe('Tagged API', function() {
             this.http.verifyNoPendingRequests();
             return promise.should.eventually.deep.equal(expectedResult);
         });
+
+        describe('caching', function() {
+            afterEach(function() {
+                if ('restore' in Math.random) {
+                    Math.random.restore();
+                }
+            });
+
+            it('does not cache duplicate calls by default', function() {
+                this.api.execute('floop');
+                this.api.execute('floop');
+                this.clock.tick(1);
+                this.http.post.lastCall.args[0].body.match(/method=floop/g).should.have.lengthOf(2);
+            });
+
+            it('optionally caches duplicate calls', function() {
+                this.api.execute('floop', {bloop: 'blip'}, {cache: true});
+                this.api.execute('floop', {bloop: 'blip'}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.lastCall.args[0].body.match(/method=floop/g).should.have.lengthOf(1);
+            });
+
+            it('optionally caches for custom amount of time', function() {
+                this.api.execute('floop', {}, {cache: 100});
+                this.clock.tick(100001);
+                this.api.execute('floop', {}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.calledTwice.should.be.true;
+            });
+
+            it('does not make duplicate calls if second call is made before cache expiry time', function() {
+                this.api.execute('floop', {}, {cache: 100});
+                this.clock.tick(90000);
+                this.api.execute('floop', {}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.calledTwice.should.be.false;
+            });
+
+            it('does not use cache if params are different', function() {
+                this.api.execute('floop', {bloop: 'blip'}, {cache: true});
+                this.api.execute('floop', {bloop: 'bleep'}, {cache: true});
+                this.clock.tick(1);
+                this.http.post.lastCall.args[0].body.match(/method=floop/g).should.have.lengthOf(2);
+            });
+
+            it('clears expired cache entries on execution if random number is above 0.99', function() {
+                this.api.execute('elephant', {}, {cache: true});
+                this.api.execute('flamingo', {}, {cache: 10});
+                this.api.execute('hippo', {}, {cache: 100});
+                this.clock.tick(11000);
+                sinon.stub(Math, 'random').returns(0.995);
+                this.api.execute('blargh');
+                this.clock.tick(1);
+                expect(this.api._cache).to.have.property('hippo:{}');
+                expect(this.api._cache).to.not.have.property('flamingo:{}');
+            });
+        });
     });
 
     describe('middleware()', function() {
