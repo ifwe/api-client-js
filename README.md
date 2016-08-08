@@ -126,3 +126,16 @@ var send = function() {
 }
 this.api.on('MESSAGE_RECIEVED', send);
 ```
+
+Response Caching
+----------------
+
+The API client now supports response caching by passing an additional `config` object into the `.execute()` call. Caching is disabled (`false`) by default.
+
+When `config.cache` is `true`, the response (regardless of success or failure) will be cached and re-used through the lifetime of the TaggedAPI instance. If set to an integer, it will be cached for that amount of time in seconds.
+
+Expired cache entries will be deleted and overwritten if an identical call is made after the cache entry expires. Additionally, all expired cache entries will be cleared approximately once every 100 `api.execute()` calls.
+
+```js
+api.execute(string endpoint[, object parameters[, object config]])
+```
