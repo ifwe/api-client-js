@@ -20,10 +20,12 @@
     //
     //     endpoint: [string] URL to post API calls to.
     //     options: [object|null] Common options that are used with each API call.
-    //     http: [HttpAdapter] Adapter to make HTTP requests.
+    //     http: [HttpAdapter|null] Adapter to make HTTP requests.
     var TaggedApi = function(endpoint, options, http) {
         this._endpoint = endpoint;
-        this._http = http;
+
+        // Default to the vanilla adapter should clients not pass adapter
+        this._http = (typeof http !== 'undefined') ? http : new VanillaAdapter(context.XMLHttpRequest, context.Promise || require('bluebird'));
 
         // API calls that are made within a single JS execution frame will be added
         // to the queue and processed as a whole on the next tick.

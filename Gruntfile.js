@@ -28,6 +28,10 @@ module.exports = function(grunt) {
                 options: {
                     footer: 'TaggedApi.angularWrapper(angular, TaggedApi);'
                 }
+            },
+            vanilla: {
+                src: ['lib/http_adapter/vanilla.js', 'lib/index.js', 'lib/vanilla.js'],
+                dest: 'api-client.js'
             }
         },
 
@@ -99,7 +103,8 @@ module.exports = function(grunt) {
         uglify: {
             angular: {
                 files: {
-                    'api-angular-min.js': ['api-angular.js']
+                    'api-angular-min.js': ['api-angular.js'],
+                    'api-client-min.js': ['api-client.js']
                 }
             }
         },
