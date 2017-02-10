@@ -1,4 +1,4 @@
-var VanillaAdapter = require(LIB_DIR + '/http_adapter/vanilla');
+var VanillaAdapter = require(LIB_DIR + '/http_adapter/vanilla').VanillaAdapter;
 var Promise = require('bluebird');
 
 function mockXMLHttpRequestFactory() {

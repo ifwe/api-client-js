@@ -51,15 +51,23 @@ app.get('/', function(req, res) {
 });
 ```
 
-**browser**
+**Browser (no package manager)**
 
 ```js
-<script src="bower_components/tagged-api/tagged-api-min.js"></script>
-<script>
+var adapter =  new TaggedApiVanillaAdapter(XMLHttpRequest, Promise);
 var api = new TaggedApi('/api.php', {
     session_id: 'abc123' // Session cookie ID from `document.cookie`
-});
-</script>
+}, adapter);
+```
+
+**Browser (CommonJS)**
+
+```js
+import {Client, VanillaAdapter} from 'bower_components/tagged-api/tagged-api-min.js';
+var adapter =  new VanillaAdapter(XMLHttpRequest, Promise);
+var api = new Client('/api.php', {
+    session_id: 'abc123' // Session cookie ID from `document.cookie`
+}, adapter);
 ```
 
 Executing API Calls
