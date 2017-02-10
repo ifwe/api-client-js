@@ -30,7 +30,7 @@ module.exports = function(grunt) {
                 }
             },
             vanilla: {
-                src: ['lib/http_adapter/vanilla.js', 'lib/index.js', 'lib/vanilla.js'],
+                src: ['lib/http_adapter/vanilla.js', 'lib/index.js'],
                 dest: 'api-client.js'
             }
         },

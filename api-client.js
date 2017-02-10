@@ -1,52 +1,62 @@
-var VanillaAdapter = function(XMLHttpRequest, Promise) {
-    this._xmlhttprequest = XMLHttpRequest;
-    this._headers = {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-    };
-    this._promise = Promise;
-    this._timeout = 10000;
-}
+(function() {
+    var context = typeof exports !== 'undefined' ? exports : window;
 
-VanillaAdapter.prototype.setTimeout = function(timeout) {
-    this._timeout = parseInt(timeout, 10) || timeout;
-}
-
-VanillaAdapter.prototype.setHeader = function(key, value) {
-    this._headers[key] = value;
-};
-
-VanillaAdapter.prototype.setHeaders = function(headers) {
-    for (var key in headers) {
-        if (!headers.hasOwnProperty(key)) {
-            continue;
-        }
-        this.setHeader(key, headers[key]);
-    }
-};
-
-VanillaAdapter.prototype.post = function(req) {
-    return new this._promise(function(resolve, reject) {
-        var xhr = new this._xmlhttprequest();
-        xhr.open('POST', req.url, true);
-        Object.keys(this._headers).forEach(function(key) {
-            xhr.setRequestHeader(key, this._headers[key]);
-        }.bind(this));
-        xhr.timeout = this._timeout;
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== 4) return;
-            try {
-                var body = JSON.parse(xhr.responseText);
-            } catch (e) {
-                reject(e);
-            }
-            resolve(body);
+    var VanillaAdapter = function(XMLHttpRequest, Promise) {
+        this._xmlhttprequest = XMLHttpRequest;
+        this._headers = {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
         };
-        xhr.send(req.body);
-    }.bind(this));
-}
+        this._promise = Promise;
+        this._timeout = 10000;
+    }
 
-module.exports = VanillaAdapter;
+    VanillaAdapter.prototype.setTimeout = function(timeout) {
+        this._timeout = parseInt(timeout, 10) || timeout;
+    }
+
+    VanillaAdapter.prototype.setHeader = function(key, value) {
+        this._headers[key] = value;
+    };
+
+    VanillaAdapter.prototype.setHeaders = function(headers) {
+        for (var key in headers) {
+            if (!headers.hasOwnProperty(key)) {
+                continue;
+            }
+            this.setHeader(key, headers[key]);
+        }
+    };
+
+    VanillaAdapter.prototype.post = function(req) {
+        return new this._promise(function(resolve, reject) {
+            var xhr = new this._xmlhttprequest();
+            xhr.open('POST', req.url, true);
+            Object.keys(this._headers).forEach(function(key) {
+                xhr.setRequestHeader(key, this._headers[key]);
+            }.bind(this));
+            xhr.timeout = this._timeout;
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState !== 4) return;
+                try {
+                    var body = JSON.parse(xhr.responseText);
+                } catch (e) {
+                    reject(e);
+                }
+                resolve(body);
+            };
+            xhr.send(req.body);
+        }.bind(this));
+    }
+
+    if (typeof module !== 'undefined' && module.exports) {
+        // We're in a commonjs environment
+        module.exports.VanillaAdapter = VanillaAdapter;
+    } else {
+        // All other environments, expose TaggedApi globally
+        context.TaggedApiVanillaAdapter = VanillaAdapter;
+    }
+})(this);
 
 // This file may run in a browser, so wrap it in an IIFE.
 (function() {
@@ -74,8 +84,8 @@ module.exports = VanillaAdapter;
     var TaggedApi = function(endpoint, options, http) {
         this._endpoint = endpoint;
 
-        // Default to the vanilla adapter should clients not pass adapter
-        this._http = (typeof http !== 'undefined') ? http : new VanillaAdapter(context.XMLHttpRequest, context.Promise || require('bluebird'));
+        // HTTP adapter to perform HTTP requests
+        this._http = http;
 
         // API calls that are made within a single JS execution frame will be added
         // to the queue and processed as a whole on the next tick.
@@ -309,7 +319,7 @@ module.exports = VanillaAdapter;
         this._events[stat].push(callback);
     };
 
-    TaggedApi.middleware = function(url, options) {
+    var middleware = function(url, options) {
         var NodeAdapter = require('./http_adapter/node');
         var http = new NodeAdapter();
 
@@ -470,15 +480,12 @@ module.exports = VanillaAdapter;
         return obj1;
     }
 
-    if (typeof exports !== 'undefined') {
-        // We're in a nodejs environment, export this module
-        module.exports = TaggedApi;
+    if (typeof module !== 'undefined' && module.exports) {
+        // We're in a commonjs environment
+        module.exports.Client = TaggedApi;
+        module.exports.middleware = middleware;
     } else {
-        // We're in a browser environment, expose this module globally
+        // All other environments, expose TaggedApi globally
         context.TaggedApi = TaggedApi;
     }
 })();
-
-(function(context) {
-    context.TaggedApi = TaggedApi;
-})(window);

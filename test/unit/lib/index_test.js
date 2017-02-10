@@ -1,5 +1,6 @@
 /*jshint expr: true*/
-var TaggedAPI = require(LIB_DIR);
+var TaggedAPI = require(LIB_DIR).Client;
+var middleware = require(LIB_DIR).middleware;
 var HttpMock = require('./mocks/http.js');
 
 describe('Tagged API', function() {
@@ -330,7 +331,7 @@ describe('Tagged API', function() {
             this.req = {};
             this.res = {};
             this.next = sinon.spy();
-            this.middleware = TaggedAPI.middleware();
+            this.middleware = middleware();
         });
 
         it('returns a function', function() {
@@ -360,7 +361,7 @@ describe('Tagged API', function() {
         });
 
         it('passes headers in whitelist to api instance', function() {
-            this.middleware = TaggedAPI.middleware('anything', {
+            this.middleware = middleware('anything', {
                 passHeaders: ['foo', 'bar']
             });
             this.req.headers = {
