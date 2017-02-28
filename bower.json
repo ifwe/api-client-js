@@ -1,8 +1,8 @@
 {
   "name": "tagged-api-client",
-  "version": "0.2.0",
+  "version": "0.3.1",
   "authors": [
-    "Hector Virgen <hvirgen@tagged.com>"
+    "Hector Virgen <hvirgen@ifwe.co>"
   ],
   "description": "Tagged API Client for AngularJS",
   "main": "api-angular.js",
