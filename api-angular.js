@@ -4,8 +4,9 @@
 
     var context = typeof exports !== 'undefined' ? exports : window;
     var base64 = context.btoa || require('btoa');
-    if (typeof(require) === 'function') {
-        var Promise = context.Promise || require('bluebird');
+    var Promise = context.Promise;
+    if (!Promise && typeof(require) === 'function') {
+        Promise = require('bluebird');
     }
 
     var COOKIE_KEYVALUE_SEPARATOR = /; */;
@@ -327,7 +328,7 @@
     };
 
     var getHighResolutionTimeStamp = function() {
-        if (process && typeof process.hrtime === 'function') {
+        if (typeof(process) !== 'undefined' && typeof process.hrtime === 'function') {
             // Node environment
             return process.hrtime();
         } else if (window && window.performance && typeof window.performance.now === 'function') {
