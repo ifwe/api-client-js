@@ -180,7 +180,7 @@ describe('VanillaJS Adapter', function() {
                 url: 'http://abc.def',
                 body: 'something'
             }).then(function(response) {
-                response.should.have.property('foo', 'bar');
+                JSON.parse(response.body).should.have.property('foo', 'bar');
             }.bind(this));
         });
     });
