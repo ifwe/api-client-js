@@ -1,6 +1,6 @@
 {
   "name": "tagged-api",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "API client for Tagged with support for nodejs and angularjs",
   "main": "lib/node.js",
   "scripts": {
@@ -21,11 +21,10 @@
     "url": "https://github.com/ifwe/api-client-js/issues"
   },
   "dependencies": {
-    "agentkeepalive": "4.1.0",
-    "bluebird": "3.7.2",
-    "btoa": "1.2.1",
-    "grunt-cli": "^1.3.2",
-    "request": "2.88.0"
+    "agentkeepalive": "^4.1.0",
+    "bluebird": "^3.7.2",
+    "btoa": "^1.2.1",
+    "request": "^2.88.0"
   },
   "homepage": "https://github.com/ifwe/api-client-js",
   "devDependencies": {
@@ -33,6 +32,7 @@
     "chai": "3.5.0",
     "chai-as-promised": "5.3.0",
     "grunt": "0.4.5",
+    "grunt-cli": "^1.3.2",
     "grunt-contrib-clean": "1.0.0",
     "grunt-contrib-concat": "1.0.1",
     "grunt-contrib-uglify": "1.0.1",
