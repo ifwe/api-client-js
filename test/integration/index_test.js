@@ -10,10 +10,14 @@ describe('Integration', function() {
                 application_id: 'user',
                 format: 'JSON'
             },
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             params: {
                 api_signature: '',
                 track: 'ya9GupbsRi'
             },
+            // Use a different cookie to test this
             cookies: 'L=zRVM1cpH3h9U.1l1RIa.1P74p2u'
         }, this.http);
     });

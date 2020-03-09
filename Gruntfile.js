@@ -128,10 +128,10 @@ module.exports = function(grunt) {
     });
 
     // Runs all tests
-    grunt.registerTask('test', 'Runts all unit and integration tests', ['mochaTest:unit', 'mochaTest:integration']);
+    grunt.registerTask('test', 'Runs all unit and integration tests', ['mochaTest:unit', 'mochaTest:integration']);
 
     // Runs all unit tests
-    grunt.registerTask('unit', 'Runts all unit tests', ['mochaTest:unit']);
+    grunt.registerTask('unit', 'Runs all unit tests', ['mochaTest:unit']);
 
     // Runs all integration tests
     grunt.registerTask('integration', 'Runs all integration tests', ['mochaTest:integration']);
