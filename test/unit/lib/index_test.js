@@ -465,7 +465,7 @@ describe('Tagged API', function() {
                     this.stubHightResolutionTimestamp = [123, 456];
                     this.hrtime = process.hrtime;
                     process.hrtime = undefined;
-                    GLOBAL.window = {
+                    global.window = {
                         performance: {
                             now: sinon.stub().returns(123.456)
                         }
@@ -474,7 +474,7 @@ describe('Tagged API', function() {
 
                 afterEach(function() {
                     process.hrtime = this.hrtime;
-                    delete GLOBAL.window;
+                    delete global.window;
                 });
 
                 it('includes timeStart as high-resolution timestamp', function(done) {
@@ -496,7 +496,7 @@ describe('Tagged API', function() {
                     this.stubHightResolutionTimestamp = [123, 456];
                     this.hrtime = process.hrtime;
                     process.hrtime = undefined;
-                    GLOBAL.window = {
+                    global.window = {
                         performance: {
                             now: sinon.stub().returns('not a high-resolution timestamp')
                         }
@@ -505,7 +505,7 @@ describe('Tagged API', function() {
 
                 afterEach(function() {
                     process.hrtime = this.hrtime;
-                    delete GLOBAL.window;
+                    delete global.window;
                 });
 
                 it('falls back to low-resolution timeStart in high-resolution format', function(done) {
@@ -526,12 +526,12 @@ describe('Tagged API', function() {
                 beforeEach(function() {
                     this.hrtime = process.hrtime;
                     process.hrtime = undefined;
-                    GLOBAL.window = {};
+                    global.window = {};
                 });
 
                 afterEach(function() {
                     process.hrtime = this.hrtime;
-                    delete GLOBAL.window;
+                    delete global.window;
                 });
 
                 it('falls back to low-resolution timeStart in high-resolution format', function(done) {

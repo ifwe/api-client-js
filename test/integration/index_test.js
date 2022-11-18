@@ -18,7 +18,7 @@ describe('Integration', function() {
                 track: 'ya9GupbsRi'
             },
             // Use a different cookie to test this
-            cookies: 'L=zRVM1cpH3h9U.1l1RIa.1P74p2u'
+            cookies: process.env.INTEGRATION_TEST_COOKIE || 'L=zRVM1cpH3h9U.1l1RIa.1P74p2u'
         }, this.http);
     });
 
