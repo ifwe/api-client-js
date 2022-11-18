@@ -207,7 +207,15 @@
 
         // exceptions will be bubbled up
         responses.forEach(function parseResponseInner(v) {
-            results.push(JSON.parse(v));
+            if (typeof v !== 'string') {
+                throw new Error('Expected string for inner JSON but got ' + JSON.stringify(v));
+            }
+            try {
+                results.push(JSON.parse(v));
+            } catch (e) {
+                console.error('Expected valid JSON string but got', e);
+                throw new Error('Invalid inner JSON string. ' + e.message + ' data: ' + v);
+            }
         });
 
         return results;
