@@ -260,7 +260,12 @@
         this._events[stat].push(callback);
     };
 
-    TaggedApi.middleware = function(url, options) {
+    /**
+     * @param {string} url - Host url of API
+     * @param {object} options
+     * @param {string} requestProp - Property name of the request (req)
+     */
+    TaggedApi.middleware = function(url, options, requestProp = 'api') {
         var NodeAdapter = require('./http_adapter/node');
         var http = new NodeAdapter();
 
@@ -286,7 +291,7 @@
                 }
             }
 
-            req.api = new TaggedApi(url, mergeRecursive(newOpts, options || {}), http);
+            req[requestProp] = new TaggedApi(url, mergeRecursive(newOpts, options || {}), http);
             next();
         };
     };
